@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="mamu_icon.png">
+<title>Mamu Trading Tagebuch</title>
+<style>
+html, body { margin:0; padding:0; height:100%; width:100%; overflow-x:hidden; font-family: Arial, sans-serif; background:#f8f8f8; }
+body { display:flex; flex-direction:column; align-items:center; }
+h1 { margin:15px 0; font-size:36px; color:gold; text-align:center; text-shadow: 1px 1px 2px #b8860b; }
+h2 { margin:10px 0 5px; font-size:18px; color:#34495e; }
+.container { width:95%; max-width:420px; }
+table { border-collapse: collapse; width:100%; margin-bottom:5px; table-layout: fixed; font-size:14px; }
+th, td { border:1px solid #aaa; padding:4px 6px; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+th { background:#f0f0f0; text-align:center; }
+td.name-cell { text-align:left; padding-left:6px; }
+input[type=number], input[type=text] { font-size:14px; width:100%; box-sizing:border-box; text-align:center; }
+input.amount-input { width:50px; }
+input.price-input { width:65px; }
+input.value-input { width:75px; }
+input.cash-input { width:80px; }
+.button-add, .button-update { background:#3498db; color:white; border:none; padding:8px; cursor:pointer; font-size:17px; border-radius:5px; flex:1; max-width:48%; }
+.button-update { background:#2ecc71; }
+.button-del { background:#e74c3c; color:white; border:none; padding:4px; cursor:pointer; font-size:12px; border-radius:3px; width:100%; }
+.diff-bar { height:26px; margin-top:5px; background:#ddd; position:relative; border-radius:4px; overflow:hidden; }
+.diff-fill { height:100%; position:absolute; left:0; top:0; border-radius:4px; text-align:center; color:white; font-size:14px; font-weight:bold; line-height:26px; transition: width 0.8s; }
+.flex-item { margin-bottom:15px; }
+.add-container, .update-container { display:none; flex-direction:column; margin-bottom:10px; padding:8px; border-radius:5px; }
+.add-container input, .update-container input { margin:4px 0; text-align:left; }
+.update-container { background:#d4f3d4; padding:10px; }
+.update-row { display:flex; align-items:center; justify-content:flex-start; margin:4px 0; }
+.update-row label { flex:0 0 45%; padding-left:6px; font-weight:bold; }
+.update-row input { flex:0 0 80px; margin-left:80px; text-align:center; }
+.popup { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:none; justify-content:center; align-items:center; z-index:1000; }
+.popup-content { background:white; padding:20px; border-radius:5px; width:80%; max-width:300px; display:flex; flex-direction:column; gap:10px; }
+.popup-content input { font-size:18px; text-align:center; }
+.popup-content button { font-size:16px; padding:6px; cursor:pointer; border-radius:5px; }
+.button-container { display:flex; gap:4%; justify-content:center; margin-bottom:5px; }
+</style>
+</head>
+<body>
+
+<h1>Mamu Trading Tagebuch</h1>
+
+<div class="container">
+
+<div class="button-container">
+  <button class="button-add" onclick="toggleAdd()">Neues Wertpapier</button>
+  <button class="button-update" onclick="toggleUpdate()">Kurse aktualisieren</button>
+</div>
+
+<div id="addContainer" class="add-container">
+  <input type="text" id="newName" placeholder="Name" style="text-align:left;">
+  <input type="number" id="newAmount" step="1" placeholder="Anzahl" style="text-align:left;">
+  <input type="number" id="newPrice" step="0.01" placeholder="Kurs (€)" style="text-align:left;">
+  <div style="display:flex; gap:5px; margin-top:5px;">
+    <label><input type="checkbox" id="addA" checked> Depot A</label>
+    <label><input type="checkbox" id="addB" checked> Depot B</label>
+    <label><input type="checkbox" id="addC" checked> Depot C</label>
+  </div>
+  <button class="button-add" onclick="addRow()">Hinzufügen</button>
+</div>
+
+<div id="updateContainer" class="update-container"></div>
+
+<div class="flex-item">
+<h2>Depot A</h2>
+<table id="depotA"><tr><th>Name</th><th>Anzahl</th><th>Kurs (€)</th><th>Wert (€)</th><th>Aktion</th></tr></table>
+<div>Cash: <input type="text" id="cashA" class="cash-input" readonly onclick="openCashPopup('A')"></div>
+<div>Gesamtwert Depot A: <span id="totalA">0,00 €</span></div>
+</div>
+
+<div class="flex-item">
+<h2>Depot B</h2>
+<table id="depotB"><tr><th>Name</th><th>Anzahl</th><th>Kurs (€)</th><th>Wert (€)</th><th>Aktion</th></tr></table>
+<div>Cash: <input type="text" id="cashB" class="cash-input" readonly onclick="openCashPopup('B')"></div>
+<div>Gesamtwert Depot B: <span id="totalB">0,00 €</span></div>
+</div>
+
+<div class="flex-item">
+<h2>Depot C</h2>
+<table id="depotC"><tr><th>Name</th><th>Anzahl</th><th>Kurs (€)</th><th>Wert (€)</th><th>Aktion</th></tr></table>
+<div>Cash: <input type="text" id="cashC" class="cash-input" readonly onclick="openCashPopup('C')"></div>
+<div>Gesamtwert Depot C: <span id="totalC">0,00 €</span></div>
+</div>
+<h2>Depot-Vergleich</h2>
+<div>Differenz (B - A): <span id="diffAB">0,00 €</span></div>
+<div class="diff-bar"><div id="diffFillAB" class="diff-fill"></div></div>
+<div>Differenz (C - A): <span id="diffAC">0,00 €</span></div>
+<div class="diff-bar"><div id="diffFillAC" class="diff-fill"></div></div>
+<div>Differenz (C - B): <span id="diffCB">0,00 €</span></div>
+<div class="diff-bar"><div id="diffFillCB" class="diff-fill"></div></div>
+
+<hr>
+<button class="button-add" onclick="clearAll()">Alles löschen</button>
+
+</div>
+
+<div id="popup" class="popup">
+  <div class="popup-content">
+    <label id="popupLabel"></label>
+    <input type="number" id="popupInput" step="0.01">
+    <button id="popupConfirm">Bestätigen</button>
+    <button onclick="closePopup()">Abbrechen</button>
+  </div>
+</div>
+
+<script>
+function formatNumber(num){ return Number(num).toLocaleString('de-DE',{minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+let depotA = JSON.parse(localStorage.getItem("depotA")||"[]");
+let depotB = JSON.parse(localStorage.getItem("depotB")||"[]");
+let depotC = JSON.parse(localStorage.getItem("depotC")||"[]");
+
+function saveData(){
+  localStorage.setItem("depotA", JSON.stringify(depotA));
+  localStorage.setItem("depotB", JSON.stringify(depotB));
+  localStorage.setItem("depotC", JSON.stringify(depotC));
+  localStorage.setItem("cashA", document.getElementById("cashA").dataset.value);
+  localStorage.setItem("cashB", document.getElementById("cashB").dataset.value);
+  localStorage.setItem("cashC", document.getElementById("cashC").dataset.value);
+}
+
+function calcTotals(){
+  function parseCash(id){ return parseFloat((document.getElementById(id).dataset.value||"0"))||0; }
+  let totalA=parseCash("cashA"), totalB=parseCash("cashB"), totalC=parseCash("cashC");
+  depotA.forEach(i=>totalA+=i.amount*i.price);
+  depotB.forEach(i=>totalB+=i.amount*i.price);
+  depotC.forEach(i=>totalC+=i.amount*i.price);
+
+  document.getElementById("totalA").innerText=formatNumber(totalA)+" €";
+  document.getElementById("totalB").innerText=formatNumber(totalB)+" €";
+  document.getElementById("totalC").innerText=formatNumber(totalC)+" €";
+
+  let diffAB=totalB-totalA, diffAC=totalC-totalA, diffCB=totalC-totalB;
+
+  document.getElementById("diffAB").innerText=formatNumber(diffAB)+" €";
+  document.getElementById("diffAC").innerText=formatNumber(diffAC)+" €";
+  document.getElementById("diffCB").innerText=formatNumber(diffCB)+" €";
+
+  function setBar(diff,id,total1,total2){
+    let bar=document.getElementById(id);
+    let maxTotal=Math.max(total1,total2,1);
+    let percent=(Math.abs(diff)/maxTotal)*(100/0.025);
+    if(percent>100) percent=100;
+    bar.style.width=percent+"%";
+    if(diff>=0) bar.style.background="linear-gradient(to right, #a0e6a0, #008000)";
+    else bar.style.background="linear-gradient(to right, #e68a8a, #b30000)";
+    let pct= ((Math.abs(diff)/maxTotal)*100).toFixed(1);
+    bar.innerText=pct+"%";
+  }
+
+  setBar(diffAB,"diffFillAB",totalA,totalB);
+  setBar(diffAC,"diffFillAC",totalA,totalC);
+  setBar(diffCB,"diffFillCB",totalB,totalC);
+}
+
+function renderTable(){
+  function fillTable(dep,tableId){
+    let table=document.getElementById(tableId);
+    table.innerHTML="<tr><th>Name</th><th>Anzahl</th><th>Kurs (€)</th><th>Wert (€)</th><th>Aktion</th></tr>";
+    dep.forEach((item,i)=>{
+      let row=table.insertRow();
+      let nameCell=row.insertCell(); nameCell.innerText=item.name; nameCell.className="name-cell";
+
+      let amtCell=row.insertCell();
+      let inputAmt=document.createElement("input");
+      inputAmt.type="number"; inputAmt.step="1"; inputAmt.className="amount-input"; 
+      inputAmt.value=item.amount;
+      inputAmt.onclick=e=>{ openAmountPopup(item,dep); e.target.blur(); };
+      amtCell.appendChild(inputAmt);
+
+      let priceCell=row.insertCell();
+      let inputPrice=document.createElement("input");
+      inputPrice.type="number"; inputPrice.step="0.01"; inputPrice.className="price-input"; 
+      inputPrice.onchange=e=>{item.price=parseFloat(e.target.value); saveData(); calcTotals(); renderTable();};
+      inputPrice.value=item.price;
+      priceCell.appendChild(inputPrice);
+
+      let valueCell=row.insertCell(); valueCell.innerText=formatNumber(item.amount*item.price);
+
+      let actionCell=row.insertCell();
+      let delBtn=document.createElement("button"); delBtn.innerText="ENTF"; delBtn.className="button-del";
+      delBtn.onclick=()=>{ showDeletePopup(item,dep); };
+      actionCell.appendChild(delBtn);
+    });
+  }
+  fillTable(depotA,"depotA");
+  fillTable(depotB,"depotB");
+  fillTable(depotC,"depotC");
+  calcTotals();
+}
+
+let deleteItem=null, deleteDepot=null;
+function showDeletePopup(item,depot){
+  deleteItem=item; deleteDepot=depot;
+  document.getElementById("popupLabel").innerText="Willst du diese Aktie wirklich löschen?";
+  document.getElementById("popupInput").style.display="none";
+  document.getElementById("popupConfirm").onclick=function(){
+    if(deleteItem && deleteDepot){
+      const index=deleteDepot.indexOf(deleteItem);
+      if(index>-1){ deleteDepot.splice(index,1); saveData(); renderTable(); }
+    }
+    closePopup();
+  };
+  document.getElementById("popup").style.display="flex";
+}
+
+let amountItem=null, amountDepot=null;
+function openAmountPopup(item,depot){
+  amountItem=item; amountDepot=depot;
+  document.getElementById("popupLabel").innerText="Anzahl für "+item.name;
+  document.getElementById("popupInput").style.display="block";
+  document.getElementById("popupInput").value="";
+  document.getElementById("popupConfirm").onclick=function(){ 
+    let val=parseFloat(document.getElementById("popupInput").value);
+    if(!isNaN(val) && amountItem && amountDepot){
+      amountItem.amount=val; saveData(); renderTable();
+    }
+    closePopup();
+  };
+  document.getElementById("popup").style.display="flex";
+}
+
+let cashDepot=null;
+function openCashPopup(depot){
+  cashDepot=depot;
+  document.getElementById("popupLabel").innerText="Cash für Depot "+depot;
+  document.getElementById("popupInput").style.display="block";
+  document.getElementById("popupInput").value="";
+  document.getElementById("popupConfirm").onclick=function(){
+    let val=parseFloat(document.getElementById("popupInput").value);
+    if(!isNaN(val)){
+      document.getElementById("cash"+cashDepot).dataset.value=val;
+      document.getElementById("cash"+cashDepot).value=formatNumber(val);
+      saveData(); calcTotals();
+    }
+    closePopup();
+  };
+  document.getElementById("popup").style.display="flex";
+}
+
+function closePopup(){ document.getElementById("popup").style.display="none"; }
+
+function toggleAdd(){
+  const container=document.getElementById("addContainer");
+  container.style.display=container.style.display==="flex"?"none":"flex";
+}
+function toggleUpdate(){
+  const container=document.getElementById("updateContainer");
+  container.innerHTML="";
+  let allNames = [];
+  [depotA,depotB,depotC].forEach(dep=>{dep.forEach(item=>{if(!allNames.includes(item.name)) allNames.push(item.name);});});
+  allNames.forEach(name=>{
+    let div=document.createElement("div"); div.className="update-row";
+    let label=document.createElement("label"); label.innerText=name;
+    let input=document.createElement("input"); input.type="number"; input.step="0.01"; input.value="";
+    div.appendChild(label); div.appendChild(input);
+    container.appendChild(div);
+  });
+  let btn=document.createElement("button"); btn.className="button-update"; btn.innerText="Aktualisieren";
+  btn.onclick=()=>{
+    let rows=container.querySelectorAll(".update-row");
+    rows.forEach((row,i)=>{
+      let val=parseFloat(row.querySelector("input").value);
+      if(!isNaN(val)){
+        [depotA,depotB,depotC].forEach(dep=>{if(dep[i]) dep[i].price=val;});
+      }
+    });
+    saveData(); renderTable(); toggleUpdate();
+  };
+  container.appendChild(btn);
+  container.style.display=container.style.display==="flex"?"none":"flex";
+}
+
+function addRow(){
+  let name=document.getElementById("newName").value;
+  let amount=parseFloat(document.getElementById("newAmount").value);
+  let price=parseFloat(document.getElementById("newPrice").value);
+  if(!name||isNaN(amount)||isNaN(price)) return;
+  if(document.getElementById("addA").checked) depotA.push({name,amount,price});
+  if(document.getElementById("addB").checked) depotB.push({name,amount,price});
+  if(document.getElementById("addC").checked) depotC.push({name,amount,price});
+  saveData(); renderTable();
+  document.getElementById("newName").value="";
+  document.getElementById("newAmount").value="";
+  document.getElementById("newPrice").value="";
+  toggleAdd();
+}
+
+function clearAll(){
+  if(confirm("Alle Daten löschen?")){
+    depotA=[]; depotB=[]; depotC=[];
+    ["cashA","cashB","cashC"].forEach(id=>{document.getElementById(id).dataset.value="0"; document.getElementById(id).value=formatNumber(0);});
+    saveData(); renderTable();
+  }
+}
+
+["A","B","C"].forEach(d=>{
+  let val=parseFloat(localStorage.getItem("cash"+d)||"0");
+  let el=document.getElementById("cash"+d);
+  el.dataset.value=val;
+  el.value=formatNumber(val);
+});
+
+renderTable();
+</script>
+</body>
+</html>
