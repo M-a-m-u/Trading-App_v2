@@ -12,7 +12,7 @@
 /*=================================================
 BASIS (HTML / BODY)
 =================================================== */
-html, body { margin:0; padding:0; height:100%; width:100%; overflow-x:hidden; font-family: 'Georgia', serif; background:#f4f0e6; }
+html, body { margin:0; padding:0; min-heigh: 100%; font-family: 'Georgia', serif; background:#f4f0e6; }
 body { display:flex; flex-direction:column; align-items:center; transition: background 0.5s ease; }
 
 #cover {
@@ -202,21 +202,25 @@ body { display:flex; flex-direction:column; align-items:center; transition: back
 /* ======================================
    Seiten-Container (Page)
    ====================================== */
+
+
 .container {
   display: none;
+
   width: 95%;
   max-width: 420px;
   margin-top: 20px;
-  min-height: calc(100vh - 40px);
+
+  min-height: 100vh;
+  height: auto;
+
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 
   background-image: url('page.png');
-/*  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat; */
-  
-  background-size: 100% auto;
-background-position: top center;
-background-repeat: repeat-y;
+  background-size: cover;
+  background-position: top center;
+  background-repeat: repeat-y;
 
   padding: 20px;
   border-radius: 12px;
@@ -227,11 +231,6 @@ background-repeat: repeat-y;
   opacity: 0;
   transform: translateY(30px) scale(0.98);
   transition: opacity 0.8s ease, transform 0.8s ease;
-}
-
-.container.open {
-  opacity: 1;
-  transform: translateY(0) scale(1);
 }
 
 #closeBook:hover {
@@ -336,6 +335,7 @@ background-repeat: repeat-y;
 </div>
 
 <script>
+document.body.style.overflow = "auto"; //< Neu, HIER Einfügen
 function formatNumber(num){ return Number(num).toLocaleString('de-DE',{minimumFractionDigits:2, maximumFractionDigits:2}); }
 
 let depotA = JSON.parse(localStorage.getItem("depotA")||"[]");
@@ -539,6 +539,7 @@ document.getElementById("cover").onclick = function () {
     const container = document.querySelector(".container");
 
     // Cover zuklappen
+	document.body.style.overflow = "hidden"; // NEU
     cover.style.transition = "transform 0.6s ease, opacity 0.6s ease";
     cover.style.transform = "scale(0.85)";
     cover.style.opacity = "0";
@@ -557,22 +558,24 @@ document.getElementById("cover").onclick = function () {
 
         // 👉 HIER JETZT der Close-Button
         const closeBtn = document.getElementById("closeBook");
-        closeBtn.onclick = function () {
-            // Seite schließen
-            container.classList.remove("open");
-            container.style.opacity = "0";
+        
+		
+		closeBtn.onclick = function () {
+    container.classList.remove("open");
+    container.style.opacity = "0";
 
-            setTimeout(() => {
-                container.style.display = "none";
+    setTimeout(() => {
+        container.style.display = "none";
 
-                // Cover zurückholen
-                cover.style.display = "block";
-                requestAnimationFrame(() => {
-                    cover.style.transform = "scale(1)";
-                    cover.style.opacity = "1";
-                });
-            }, 500);
-        };
+        document.body.style.overflow = "auto"; // <-- HIER
+
+        cover.style.display = "block";
+        requestAnimationFrame(() => {
+            cover.style.transform = "scale(1)";
+            cover.style.opacity = "1";
+        });
+    }, 500);
+};
 
     }, 600);
 
