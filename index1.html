@@ -1,0 +1,600 @@
+/* 19.01. 23.10 */
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon.PNG">
+<title>Mamu Trading Tagebuch</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/*=================================================
+BASIS (HTML / BODY)
+=================================================== */
+
+html {
+  height: 100%;
+  overflow-y: auto;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  background: #f4f0e6;
+  overflow-y: auto;
+}
+
+#cover {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('cover.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.6s ease, opacity 0.6s ease;
+}
+
+#cover:hover {
+  transform: scale(1.02);
+}
+
+/*==================================================
+  TYPOGRAFIE
+  ================================================== */
+/* h1 { margin:0 0 15px 0; font-size:36px; color:gold; text-align:center; text-shadow: 1px 1px 2px #b8860b; font-family:'Palatino Linotype','Book Antiqua', Palatino, serif; } */
+.container h2 { margin:10px 0 5px; font-size:18px; color:#5b3a21; }
+
+/*==================================================
+  TABELLEN
+  ================================================== */
+
+
+.container table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 5px;
+  table-layout: fixed;
+  font-size: 14px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 5px;
+}
+
+.container th,
+.container td {
+  border: 1px solid #aa845c;
+  padding: 4px 6px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.container th {
+  background: #e6d9c1;
+}
+
+.container td.name-cell {
+  text-align: left;
+  padding-left: 6px;
+}
+
+
+
+.container input[type=number],
+.container input[type=text] {
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  border: 1px solid #aa845c;
+  border-radius: 4px;
+  padding: 2px;
+  background: #fff8f0;
+}
+
+/*==================================================
+  BUTTONS
+  ================================================== */
+  
+
+#cover {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('cover.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.6s ease, opacity 0.6s ease;
+}
+
+#cover:hover {
+  transform: scale(1.02);
+}
+
+.diff-bar { height:26px; margin-top:5px; background:#d4c1a2; position:relative; border-radius:4px; overflow:hidden; }
+.diff-fill { height:100%; position:absolute; left:0; top:0; border-radius:4px; text-align:center; color:white; font-size:14px; font-weight:bold; line-height:26px; transition: width 0.8s; }
+.flex-item { margin-bottom:15px; }
+.add-container, .update-container { display:none; flex-direction:column; margin-bottom:10px; padding:8px; border-radius:5px; background:rgba(255,255,255,0.9); }
+
+.update-container { padding:10px; }
+
+.update-row { display:flex; align-items:center; justify-content:flex-start; margin:4px 0; }
+.update-row label { flex:0 0 45%; padding-left:6px; font-weight:bold; color:#5b3a21; }
+.update-row input { flex:0 0 80px; margin-left:80px; text-align:center; border:1px solid #aa845c; border-radius:4px; background:#fff8f0; }
+
+.popup { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:none; justify-content:center; align-items:center; z-index:1000; }
+.popup-content { background:#fdf5e6; padding:20px; border-radius:5px; width:80%; max-width:300px; display:flex; flex-direction:column; gap:10px; }
+.popup-content input { font-size:18px; text-align:center; border:1px solid #aa845c; border-radius:4px; background:#fff8f0; }
+.popup-content button { font-size:16px; padding:6px; cursor:pointer; border-radius:5px; background:#b8860b; color:white; border:none; transition: background 0.3s ease; }
+.popup-content button:hover { background:#a97500; }
+
+.button-container { display:flex; gap:4%; justify-content:center; margin-bottom:5px; }
+
+/* =========================
+   Buttons – NEU & SAUBER
+   ========================= */
+
+.button-add {
+  background: linear-gradient(180deg, #d6b25e, #9f7c1f);
+  color: #fff;
+  border: none;
+  padding: 8px;
+  font-size: 17px;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+
+.button-add:hover {
+  background: linear-gradient(180deg, #e8c873, #b8932f);
+}
+
+.button-update {
+  background: linear-gradient(180deg, #3fa26b, #1f7044);
+  color: #fff;
+  border: none;
+  padding: 8px;
+  font-size: 17px;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+
+.button-update:hover {
+  background: linear-gradient(180deg, #56b57f, #288e5a);
+}
+
+.button-del {
+  background: linear-gradient(180deg, #a83232, #6b1e1e);
+  color: #fff;
+  border: none;
+  padding: 4px;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.button-del:hover {
+  background: linear-gradient(180deg, #c04444, #822424);
+}
+
+ 
+
+
+#closeBook {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(120, 80, 40, 0.85);
+  color: gold;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 50;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+/* ======================================
+   Seiten-Container (Page)
+   ====================================== */
+
+.container {
+  display: none;
+  width: 95%;
+  max-width: 420px;
+  margin: 20px auto;
+
+  /* DAS IST DER ENTSCHEIDENDE TEIL */
+  background-image: url('page.png');
+  background-repeat: repeat-y;
+  background-size: 100% auto;
+  background-position: top center;
+
+  padding: 20px 20px 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+
+  position: relative;
+  z-index: 1;
+
+  height: auto;
+  min-height: 100%;
+
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+
+
+#closeBook:hover {
+  background: rgba(150, 100, 50, 0.95);
+  transform: scale(1.08);
+}
+/* Titel im Buch – exakt wie Cover */
+.page-header h1 {
+  font-family: 'Cinzel Decorative', 'Palatino Linotype', 'Book Antiqua', serif;
+  font-size: 34px;
+  letter-spacing: 0.6px;
+  margin: 0;
+  padding: 4px 40px 10px 40px;
+  text-align: center;
+
+  background: linear-gradient(
+    180deg,
+    #fff7cc 0%,
+    #f0d77a 30%,
+    #c9a43a 55%,
+    #8f6a12 100%
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  text-shadow:
+    1px 1px 2px rgba(0,0,0,0.45),
+    0 0 8px rgba(201,164,58,0.5);
+}
+</style>
+</head>
+<body>
+
+<div id="cover"></div>
+
+<div class="container">
+<div class="page-header">
+  <h1>Mamu Trading Tagebuch</h1>
+  <button id="closeBook" title="Buch schließen">✕</button>
+
+
+<div class="button-container">
+  <button class="button-add" onclick="toggleAdd()">Neues Wertpapier</button>
+  <button class="button-update" onclick="toggleUpdate()">Kurse aktualisieren</button>
+</div>
+
+<div id="addContainer" class="add-container">
+  <input type="text" id="newName" placeholder="Name" style="text-align:left;">
+  <input type="number" id="newAmount" step="1" placeholder="Anzahl" style="text-align:left;">
+  <input type="number" id="newPrice" step="0.01" placeholder="Kurs (€)" style="text-align:left;">
+  <div style="display:flex; gap:5px; margin-top:5px;">
+    <label><input type="checkbox" id="addA" checked> Depot A</label>
+    <label><input type="checkbox" id="addB" checked> Depot B</label>
+    <label><input type="checkbox" id="addC" checked> Depot C</label>
+  </div>
+  <button class="button-add" onclick="addRow()">Hinzufügen</button>
+</div>
+
+<div id="updateContainer" class="update-container"></div>
+
+<div class="flex-item">
+<h2>Depot A</h2>
+<table id="depotA"><tr><th>Name</th><th>Anzahl</th><th>Kurs (€)</th><th>Wert (€)</th><th>Aktion</th></tr></table>
+<div>Cash: <input type="text" id="cashA" class="cash-input" readonly onclick="openCashPopup('A')"></div>
+<div>Gesamtwert Depot A: <span id="totalA">0,00 €</span></div>
+</div>
+
+<div class="flex-item">
+<h2>Depot B</h2>
+<table id="depotB"><tr><th>Name</th><th>Anzahl</th><th>Kurs (€)</th><th>Wert (€)</th><th>Aktion</th></tr></table>
+<div>Cash: <input type="text" id="cashB" class="cash-input" readonly onclick="openCashPopup('B')"></div>
+<div>Gesamtwert Depot B: <span id="totalB">0,00 €</span></div>
+</div>
+<div class="flex-item">
+<h2>Depot C</h2>
+<table id="depotC"><tr><th>Name</th><th>Anzahl</th><th>Kurs (€)</th><th>Wert (€)</th><th>Aktion</th></tr></table>
+<div>Cash: <input type="text" id="cashC" class="cash-input" readonly onclick="openCashPopup('C')"></div>
+<div>Gesamtwert Depot C: <span id="totalC">0,00 €</span></div>
+</div>
+
+<h2>Depot-Vergleich</h2>
+<div>Differenz (B - A): <span id="diffAB">0,00 €</span></div>
+<div class="diff-bar"><div id="diffFillAB" class="diff-fill"></div></div>
+<div>Differenz (C - A): <span id="diffAC">0,00 €</span></div>
+<div class="diff-bar"><div id="diffFillAC" class="diff-fill"></div></div>
+<div>Differenz (C - B): <span id="diffCB">0,00 €</span></div>
+<div class="diff-bar"><div id="diffFillCB" class="diff-fill"></div></div>
+
+<hr>
+<button class="button-add" onclick="clearAll()">Alles löschen</button>
+
+</div>
+
+<div id="popup" class="popup">
+  <div class="popup-content">
+    <label id="popupLabel"></label>
+    <input type="number" id="popupInput" step="0.01">
+    <button id="popupConfirm">Bestätigen</button>
+    <button onclick="closePopup()">Abbrechen</button>
+  </div>
+</div>
+
+<script>
+
+function formatNumber(num){ return Number(num).toLocaleString('de-DE',{minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+let depotA = JSON.parse(localStorage.getItem("depotA")||"[]");
+let depotB = JSON.parse(localStorage.getItem("depotB")||"[]");
+let depotC = JSON.parse(localStorage.getItem("depotC")||"[]");
+
+function saveData(){
+  localStorage.setItem("depotA", JSON.stringify(depotA));
+  localStorage.setItem("depotB", JSON.stringify(depotB));
+  localStorage.setItem("depotC", JSON.stringify(depotC));
+  localStorage.setItem("cashA", document.getElementById("cashA").dataset.value);
+  localStorage.setItem("cashB", document.getElementById("cashB").dataset.value);
+  localStorage.setItem("cashC", document.getElementById("cashC").dataset.value);
+}
+
+function calcTotals(){
+  function parseCash(id){ return parseFloat((document.getElementById(id).dataset.value||"0"))||0; }
+  let totalA=parseCash("cashA"), totalB=parseCash("cashB"), totalC=parseCash("cashC");
+  depotA.forEach(i=>totalA+=i.amount*i.price);
+  depotB.forEach(i=>totalB+=i.amount*i.price);
+  depotC.forEach(i=>totalC+=i.amount*i.price);
+
+  document.getElementById("totalA").innerText=formatNumber(totalA)+" €";
+  document.getElementById("totalB").innerText=formatNumber(totalB)+" €";
+  document.getElementById("totalC").innerText=formatNumber(totalC)+" €";
+
+  let diffAB=totalB-totalA, diffAC=totalC-totalA, diffCB=totalC-totalB;
+
+  document.getElementById("diffAB").innerText=formatNumber(diffAB)+" €";
+  document.getElementById("diffAC").innerText=formatNumber(diffAC)+" €";
+  document.getElementById("diffCB").innerText=formatNumber(diffCB)+" €";
+
+  function setBar(diff,id,total1,total2){
+    let bar=document.getElementById(id);
+    let maxTotal=Math.max(total1,total2,1);
+    let percent=(Math.abs(diff)/maxTotal)*(100/0.025);
+    if(percent>100) percent=100;
+    bar.style.width=percent+"%";
+    if(diff>=0) bar.style.background="linear-gradient(to right, #a0e6a0, #008000)";
+    else bar.style.background="linear-gradient(to right, #e68a8a, #b30000)";
+    let pct= ((Math.abs(diff)/maxTotal)*100).toFixed(1);
+    bar.innerText=pct+"%";
+  }
+
+  setBar(diffAB,"diffFillAB",totalA,totalB);
+  setBar(diffAC,"diffFillAC",totalA,totalC);
+  setBar(diffCB,"diffFillCB",totalB,totalC);
+}
+
+function renderTable(){
+  function fillTable(dep,tableId){
+    let table=document.getElementById(tableId);
+    table.innerHTML="<tr><th>Name</th><th>Anzahl</th><th>Kurs (€)</th><th>Wert (€)</th><th>Aktion</th></tr>";
+    dep.forEach((item,i)=>{
+      let row=table.insertRow();
+      let nameCell=row.insertCell(); nameCell.innerText=item.name; nameCell.className="name-cell";
+
+      let amtCell=row.insertCell();
+      let inputAmt=document.createElement("input");
+      inputAmt.type="number"; inputAmt.step="1"; inputAmt.className="amount-input"; 
+      inputAmt.value=item.amount;
+      inputAmt.onclick=e=>{ openAmountPopup(item,dep); e.target.blur(); };
+      amtCell.appendChild(inputAmt);
+
+      let priceCell=row.insertCell();
+      let inputPrice=document.createElement("input");
+      inputPrice.type="number"; inputPrice.step="0.01"; inputPrice.className="price-input"; 
+      inputPrice.onchange=e=>{item.price=parseFloat(e.target.value); saveData(); calcTotals(); renderTable();};
+      inputPrice.value=item.price;
+      priceCell.appendChild(inputPrice);
+
+      let valueCell=row.insertCell(); valueCell.innerText=formatNumber(item.amount*item.price);
+
+      let actionCell=row.insertCell();
+      let delBtn=document.createElement("button"); delBtn.innerText="ENTF"; delBtn.className="button-del";
+      delBtn.onclick=()=>{ showDeletePopup(item,dep); };
+      actionCell.appendChild(delBtn);
+    });
+  }
+  fillTable(depotA,"depotA");
+  fillTable(depotB,"depotB");
+  fillTable(depotC,"depotC");
+  calcTotals();
+}
+
+let deleteItem=null, deleteDepot=null;
+function showDeletePopup(item,depot){
+  deleteItem=item; deleteDepot=depot;
+  document.getElementById("popupLabel").innerText="Willst du diese Aktie wirklich löschen?";
+  document.getElementById("popupInput").style.display="none";
+  document.getElementById("popupConfirm").onclick=function(){
+    if(deleteItem && deleteDepot){
+      const index=deleteDepot.indexOf(deleteItem);
+      if(index>-1){ deleteDepot.splice(index,1); saveData(); renderTable(); }
+    }
+    closePopup();
+  };
+  document.getElementById("popup").style.display="flex";
+}
+
+let amountItem=null, amountDepot=null;
+function openAmountPopup(item,depot){
+  amountItem=item; amountDepot=depot;
+  document.getElementById("popupLabel").innerText="Anzahl für "+item.name;
+  document.getElementById("popupInput").style.display="block";
+  document.getElementById("popupInput").value="";
+  document.getElementById("popupConfirm").onclick=function(){ 
+    let val=parseFloat(document.getElementById("popupInput").value);
+    if(!isNaN(val) && amountItem && amountDepot){
+      amountItem.amount=val; saveData(); renderTable();
+    }
+    closePopup();
+  };
+  document.getElementById("popup").style.display="flex";
+}
+
+let cashDepot=null;
+function openCashPopup(depot){
+  cashDepot=depot;
+  document.getElementById("popupLabel").innerText="Cash für Depot "+depot;
+  document.getElementById("popupInput").style.display="block";
+  document.getElementById("popupInput").value="";
+  document.getElementById("popupConfirm").onclick=function(){
+    let val=parseFloat(document.getElementById("popupInput").value);
+    if(!isNaN(val)){
+      document.getElementById("cash"+cashDepot).dataset.value=val;
+      document.getElementById("cash"+cashDepot).value=formatNumber(val);
+      saveData(); calcTotals();
+    }
+    closePopup();
+  };
+  document.getElementById("popup").style.display="flex";
+}
+
+function closePopup(){ document.getElementById("popup").style.display="none"; }
+
+function toggleAdd(){
+  const container=document.getElementById("addContainer");
+  container.style.display=container.style.display==="flex"?"none":"flex";
+}
+function toggleUpdate(){
+  const container=document.getElementById("updateContainer");
+  container.innerHTML="";
+  let allNames = [];
+  [depotA,depotB,depotC].forEach(dep=>{dep.forEach(item=>{if(!allNames.includes(item.name)) allNames.push(item.name);});});
+  allNames.forEach(name=>{
+    let div=document.createElement("div"); div.className="update-row";
+    let label=document.createElement("label"); label.innerText=name;
+    let input=document.createElement("input"); input.type="number"; input.step="0.01"; input.value="";
+    div.appendChild(label); div.appendChild(input);
+    container.appendChild(div);
+  });
+  let btn=document.createElement("button"); btn.className="button-update"; btn.innerText="Aktualisieren";
+  btn.onclick=()=>{
+    let rows=container.querySelectorAll(".update-row");
+    rows.forEach((row,i)=>{
+      let val=parseFloat(row.querySelector("input").value);
+      if(!isNaN(val)){
+        [depotA,depotB,depotC].forEach(dep=>{if(dep[i]) dep[i].price=val;});
+      }
+    });
+    saveData(); renderTable(); toggleUpdate();
+  };
+  container.appendChild(btn);
+  container.style.display=container.style.display==="flex"?"none":"flex";
+}
+
+function addRow(){
+  let name=document.getElementById("newName").value;
+  let amount=parseFloat(document.getElementById("newAmount").value);
+  let price=parseFloat(document.getElementById("newPrice").value);
+  if(!name||isNaN(amount)||isNaN(price)) return;
+  if(document.getElementById("addA").checked) depotA.push({name,amount,price});
+  if(document.getElementById("addB").checked) depotB.push({name,amount,price});
+  if(document.getElementById("addC").checked) depotC.push({name,amount,price});
+  saveData(); renderTable();
+  document.getElementById("newName").value="";
+  document.getElementById("newAmount").value="";
+  document.getElementById("newPrice").value="";
+  toggleAdd();
+}
+
+function clearAll(){
+  if(confirm("Alle Daten löschen?")){
+    depotA=[]; depotB=[]; depotC=[];
+    ["cashA","cashB","cashC"].forEach(id=>{document.getElementById(id).dataset.value="0"; document.getElementById(id).value=formatNumber(0);});
+    saveData(); renderTable();
+  }
+}
+
+["A","B","C"].forEach(d=>{
+  let val=parseFloat(localStorage.getItem("cash"+d)||"0");
+  let el=document.getElementById("cash"+d);
+  el.dataset.value=val;
+  el.value=formatNumber(val);
+});
+
+
+document.getElementById("cover").onclick = function () {
+    const cover = document.getElementById("cover");
+    const container = document.querySelector(".container");
+
+    // Cover zuklappen
+	
+    cover.style.transition = "transform 0.6s ease, opacity 0.6s ease";
+    cover.style.transform = "scale(0.85)";
+    cover.style.opacity = "0";
+
+    setTimeout(() => {
+        cover.style.display = "none";
+
+        // Seite anzeigen
+        container.style.display = "block";
+        container.style.opacity = "0";
+
+        requestAnimationFrame(() => {
+            container.classList.add("open");
+            container.style.opacity = "1";
+        });
+
+        // 👉 HIER JETZT der Close-Button
+        const closeBtn = document.getElementById("closeBook");
+        
+		
+		closeBtn.onclick = function () {
+    container.classList.remove("open");
+    container.style.opacity = "0";
+
+    setTimeout(() => {
+        container.style.display = "none";
+
+        document.body.style.overflow = "auto"; // <-- HIER
+
+        cover.style.display = "block";
+        requestAnimationFrame(() => {
+            cover.style.transform = "scale(1)";
+            cover.style.opacity = "1";
+        });
+    }, 500);
+};
+
+    }, 600);
+
+
+
+
+
+renderTable();
+};
+</script>
+</body>
+</html>
