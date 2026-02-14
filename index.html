@@ -643,18 +643,22 @@ body.page-open {
 }  
 */
 
+:root {
+  --screenshot-width: 330px;           /* Hier kann man die Breite vom Feld verändern */
+}
+
 .paste-preview {
   display: none;
 
   margin-top: 10px;
   padding: 10px;
 
-  width: 100%;
-  max-width: 310px;
+  width: var(--screenshot-width);
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
    
-  min-height: 300px;                   /* Hier kann man das Textfeld in der Länge vergrößern z.B. 120-180 bequem ode 280-320 großzügig Mamu 29.01.2026 */
+  min-height: 200px;                   /* Hier kann man das Textfeld in der Länge vergrößern z.B. 120-180 bequem ode 280-320 großzügig Mamu 29.01.2026 */
 
   box-sizing: border-box;
 
@@ -2003,25 +2007,25 @@ if (symbol) {
     if (y < centerY - threshold) {
       direction = "up";
       symbol.style.transform =
-        "perspective(1000px) scale(1.08) rotateX(20deg)";
+        "perspective(1000px) scale(1.08) rotateX(26deg)";
     }
     // UNTEN
     else if (y > centerY + threshold) {
       direction = "down";
       symbol.style.transform =
-        "perspective(1000px) scale(1.08) rotateX(-20deg)";
+        "perspective(1000px) scale(1.08) rotateX(-26deg)";
     }
     // RECHTS
     else if (x > centerX + threshold) {
       direction = "right";
       symbol.style.transform =
-        "perspective(1000px) scale(1.08) rotateY(20deg)";
+        "perspective(1000px) scale(1.08) rotateY(28deg)";
     }
     // LINKS
     else if (x < centerX - threshold) {
       direction = "left";
       symbol.style.transform =
-        "perspective(1000px) scale(1.08) rotateY(-20deg)";
+        "perspective(1000px) scale(1.08) rotateY(-28deg)";
     }
 
     setTimeout(() => {
