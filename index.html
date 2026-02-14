@@ -740,11 +740,11 @@ body.page-open {
   width: 100%;
   height: 100%;
 
-  pointer-events: none; /* nichts anklickbar */
+  pointer-events: auto; /* anklickbar */
 }
 
 
-#mantraScreen::before {
+#mantraScreen:before {
   content: "";
   position: absolute;
   inset: 0;
@@ -899,13 +899,19 @@ body.page-open {
         ॐ श्रीं महालक्ष्म्यै नमः
       </div>
 
-      <div class="yantra-wrapper">
-        <img
-          src="img/sri-yantra.png"
-          alt="Sri Yantra"
-          class="yantra-symbol"
-        >
-      </div>
+     
+<div class="yantra-wrapper">
+  <div class="yantra-3d">
+    <img
+      src="img/sri-yantra.png"
+      alt="Sri Yantra"
+      class="yantra-symbol"
+    >
+    <div class="yantra-edge"></div>
+  </div>
+</div>
+
+
 
      <div class="mantra-text mantra-bottom">
   <span class="mantra-line">Om</span>
@@ -1654,6 +1660,7 @@ document.getElementById("cover").onclick = function () {
   appState = "mantra";
 
   const cover = document.getElementById("cover");
+
   const mantraScreen = document.getElementById("mantraScreen");
   const symbol = document.querySelector(".yantra-symbol");
 
@@ -1925,6 +1932,9 @@ document.addEventListener("DOMContentLoaded", () => {
 // ===============================
 // MANTRA → PAGE
 // ===============================
+
+/*
+
 const mantraScreen = document.getElementById("mantraScreen");
 
 if (mantraScreen) {
@@ -1967,6 +1977,101 @@ if (mantraScreen) {
     }, 400);
   };
 }
+
+*/
+
+const symbol = document.querySelector(".yantra-symbol");
+
+if (symbol) {
+  symbol.addEventListener("click", function (e) {
+    e.stopPropagation();
+
+    if (appState !== "mantra") return;
+
+    const rect = symbol.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const threshold = 40;
+
+    let direction = null;
+
+    // OBEN
+    if (y < centerY - threshold) {
+      direction = "up";
+      symbol.style.transform =
+        "perspective(1000px) scale(1.08) rotateX(20deg)";
+    }
+    // UNTEN
+    else if (y > centerY + threshold) {
+      direction = "down";
+      symbol.style.transform =
+        "perspective(1000px) scale(1.08) rotateX(-20deg)";
+    }
+    // RECHTS
+    else if (x > centerX + threshold) {
+      direction = "right";
+      symbol.style.transform =
+        "perspective(1000px) scale(1.08) rotateY(20deg)";
+    }
+    // LINKS
+    else if (x < centerX - threshold) {
+      direction = "left";
+      symbol.style.transform =
+        "perspective(1000px) scale(1.08) rotateY(-20deg)";
+    }
+
+    setTimeout(() => {
+
+  // Symbol zurück in Ruheposition
+  symbol.style.transform =
+    "perspective(1000px) scale(1.08) rotateX(0deg) rotateY(0deg)";
+
+  // Erst NACH der Rückkehr navigieren
+  if (direction === "right") {
+
+    setTimeout(() => {
+      openPage();
+    }, 800);  // ← Hier entsteht das bewusste Innehalten
+
+  }
+
+}, 350);
+  });
+}
+
+
+function openPage() {
+
+  appState = "page";
+
+  const mantraScreen = document.getElementById("mantraScreen");
+  const container = document.querySelector(".container");
+
+  mantraScreen.style.opacity = "0";
+
+  setTimeout(() => {
+
+    mantraScreen.style.display = "none";
+
+    document.body.classList.remove("cover-open");
+    document.body.classList.add("page-open");
+
+    container.style.display = "block";
+
+    requestAnimationFrame(() => {
+      container.classList.add("open");
+      container.style.opacity = "1";
+    });
+
+    renderTable();
+
+  }, 300);
+}
+
 
 </script>
 </body>
