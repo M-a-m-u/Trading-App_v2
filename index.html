@@ -279,6 +279,16 @@ body.page-open {
   
 }
 
+.depot-button {
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.depot-button:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
 
 
 .edit-input {
@@ -735,6 +745,9 @@ body.page-open {
   z-index: 20;
 }
 
+
+
+
 .yantra-layer {
   display: flex;
   flex-direction: column;
@@ -871,6 +884,71 @@ body.page-open {
  
 }
 
+/* =========================
+   CAPITAL SCREEN – BASIS
+   ========================= */
+
+.screen-layer {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 30;
+
+  background: 
+    radial-gradient(circle at 50% 40%, 
+      rgba(80,80,80,0.35),
+      rgba(0,0,0,0.95)
+    );
+}
+
+.capital-inner {
+  position: relative;
+  width: 80%;
+  max-width: 420px;
+  height: 220px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 18px;
+}
+
+.capital-value {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  text-align: right;
+  min-width: 12ch;                      /* sorgt für stabile Breite */
+  letter-spacing: 1px;
+
+  font-family: "Cinzel Decorative", serif;
+  font-size: 48px;
+  color: #d8c28a;
+
+  opacity: 0;
+  transform: translateY(20px);
+
+  transition:
+    opacity 1.6s ease,
+    transform 1.6s ease;
+
+  text-shadow:
+    0 0 8px rgba(216,194,138,0.4),
+    0 0 16px rgba(184,134,11,0.25);
+}
+
+.capital-close {
+  margin-top: 30px;
+  background: none;
+  border: 1px solid #aa845c;
+  color: #d8c28a;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
 </style>
 </head>
@@ -889,7 +967,28 @@ body.page-open {
   </div>
 </div>
 
+<!-- =========================
+     DEPOT-KARTE
+     ========================= -->
+<div id="depotCard" class="popup">
 
+ <div class="popup-content">
+  <div id="depotCardTitle">Depot</div>
+
+  <input type="text" id="depotBroker" placeholder="Broker">
+
+  <label>Eröffnet am:</label>
+  <input type="date" id="depotOpened">
+
+  <label>Geschlossen am:</label>
+  <input type="date" id="depotClosed">
+
+  <button onclick="closeDepotCard()">Schließen</button>
+
+</div>
+
+
+</div>
 
 <!-- =========================
      MANTRA-SEITE (hidden)
@@ -927,6 +1026,28 @@ body.page-open {
 
   </div>
 </div>
+
+
+
+
+
+<!-- =========================
+     CAPITAL-SCREEN
+     ========================= -->
+<div id="capitalScreen" class="screen-layer">
+  <div class="capital-inner">
+
+    <div class="capital-value" id="capitalValue">
+      0,00 €
+    </div>
+
+    <button class="capital-close" onclick="closeCapitalScreen()">
+      Zurück
+    </button>
+
+  </div>
+</div>
+
 
 <div id="cover"></div>
 
@@ -1006,7 +1127,11 @@ body.page-open {
 
 
 
-<h2><span class="section-label">Depot A</span></h2>
+<h2>
+  <span class="section-label depot-button" onclick="openDepotCard('A')">
+    Depot A
+  </span>
+</h2>
 
 <div class="flex-item">
 
@@ -1055,7 +1180,11 @@ body.page-open {
 </div>
 </div>
 
-<h2><span class="section-label">Depot B</span></h2>
+<h2>
+  <span class="section-label depot-button" onclick="openDepotCard('B')">
+    Depot B
+  </span>
+</h2>
 
 <div class="flex-item">
 <!-- <h2>Depot B</h2> -->
@@ -1102,7 +1231,11 @@ body.page-open {
 </div>
 </div>
 
-<h2><span class="section-label">Depot C</span></h2>
+<h2>
+  <span class="section-label depot-button" onclick="openDepotCard('C')">
+    Depot C
+  </span>
+</h2>
 
 <div class="flex-item">
 <!-- <h2>Depot C</h2> -->
@@ -1244,6 +1377,7 @@ function saveAppData() {
 // ================================
 // APP-DATEN LADEN
 // ================================
+
 function loadAppData() {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return; // erstes Öffnen → nichts zu laden
@@ -1252,6 +1386,14 @@ function loadAppData() {
     const parsed = JSON.parse(raw);
     if (parsed && parsed.depots && parsed.cash) {
       appData = parsed;
+
+    if (!appData.depotInfo) {
+  appData.depotInfo = {
+    A: { broker: "", opened: "", closed: "" },
+    B: { broker: "", opened: "", closed: "" },
+    C: { broker: "", opened: "", closed: "" }
+  };
+}  
 
       // Referenzen sauber neu setzen
       depotA = appData.depots.A;
@@ -1274,6 +1416,11 @@ let appData = {
     B: [],
     C: []
   },
+  depotInfo: {
+    A: { broker: "", opened: "", closed: "" },
+    B: { broker: "", opened: "", closed: "" },
+    C: { broker: "", opened: "", closed: "" }
+  },
   cash: {
     A: 0,
     B: 0,
@@ -1281,7 +1428,7 @@ let appData = {
   },
   meta: {
     lastSaved: null,
-    version: 1
+    version: 2
   }
 };
 
@@ -1832,6 +1979,28 @@ if (pasteArea) {
 }
 
 
+let currentDepotKey = null;
+
+function openDepotCard(depotKey) {
+  const card = document.getElementById("depotCard");
+  const title = document.getElementById("depotCardTitle");
+
+  if (!card || !title) return;
+
+  currentDepotKey = depotKey;
+
+  title.innerText = "Depot " + depotKey;
+
+  // Gespeicherte Daten laden
+  const info = appData.depotInfo[depotKey];
+
+  document.getElementById("depotBroker").value = info.broker || "";
+  document.getElementById("depotOpened").value = info.opened || "";
+  document.getElementById("depotClosed").value = info.closed || "";
+
+  card.style.display = "flex";
+}
+
 
 // =========================
 // STARTZUSTAND FESTLEGEN
@@ -1932,6 +2101,26 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
+
+
+
+function closeDepotCard() {
+  const card = document.getElementById("depotCard");
+
+  if (!card || !currentDepotKey) return;
+
+  // Werte speichern
+  appData.depotInfo[currentDepotKey] = {
+    broker: document.getElementById("depotBroker").value,
+    opened: document.getElementById("depotOpened").value,
+    closed: document.getElementById("depotClosed").value
+  };
+
+  saveAppData();
+
+  card.style.display = "none";
+}
+
 
 // ===============================
 // MANTRA → PAGE
@@ -2043,6 +2232,15 @@ if (symbol) {
 
   }
 
+if (direction === "up") {
+
+  setTimeout(() => {
+    openCapitalScreen();
+  }, 800);
+
+}
+
+
 }, 350);
   });
 }
@@ -2074,6 +2272,112 @@ function openPage() {
     renderTable();
 
   }, 300);
+}
+
+
+
+function openCapitalScreen() {
+
+  appState = "capital";
+
+  const mantraScreen = document.getElementById("mantraScreen");
+  const capitalScreen = document.getElementById("capitalScreen");
+  const numberField = document.getElementById("capitalValue");
+
+  mantraScreen.style.opacity = "0";
+
+  setTimeout(() => {
+
+    mantraScreen.style.display = "none";
+    capitalScreen.style.display = "flex";
+
+    // Kapital berechnen
+    const total = getTotalCapitalC();
+
+    const formatted = total.toLocaleString("de-DE", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }) + " €";
+
+    numberField.innerText = "";
+    numberField.style.textAlign = "right";
+
+    let result = "";
+    let chars = formatted.split("").reverse();
+    let index = 0;
+
+    function animateNextChar() {
+
+      if (index >= chars.length) return;
+
+      const char = chars[index];
+
+      // Zeichen wie Punkt, Komma, Leerzeichen, €
+      if (isNaN(char)) {
+        result = char + result;
+        numberField.innerText = result;
+        index++;
+        setTimeout(animateNextChar, 180);
+        return;
+      }
+
+      let targetDigit = parseInt(char);
+      let currentDigit = 0;
+
+      function spinDigit() {
+
+        result = currentDigit + result.substring(1);
+        numberField.innerText = result;
+
+        if (currentDigit < targetDigit) {
+          currentDigit++;
+          setTimeout(spinDigit, 40);
+        } else {
+          index++;
+          setTimeout(animateNextChar, 120);
+        }
+      }
+
+      result = "0" + result;
+      numberField.innerText = result;
+
+      setTimeout(spinDigit, 100);
+    }
+
+    setTimeout(animateNextChar, 600);
+
+  }, 300);
+}
+
+
+function closeCapitalScreen() {
+
+  const capitalScreen = document.getElementById("capitalScreen");
+  const mantraScreen = document.getElementById("mantraScreen");
+
+  capitalScreen.style.display = "none";
+
+  mantraScreen.style.display = "flex";
+
+  requestAnimationFrame(() => {
+    mantraScreen.style.opacity = "1";
+  });
+
+  appState = "mantra";
+}
+
+function getTotalCapitalC() {
+
+  // Aktienwert berechnen
+  let stockValue = 0;
+  appData.depots.C.forEach(item => {
+    stockValue += item.amount * item.price;
+  });
+
+  // Cash addieren
+  const cash = appData.cash.C || 0;
+
+  return stockValue + cash;
 }
 
 
