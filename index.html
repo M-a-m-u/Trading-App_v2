@@ -2275,7 +2275,6 @@ function openPage() {
 }
 
 
-
 function openCapitalScreen() {
 
   appState = "capital";
@@ -2291,68 +2290,64 @@ function openCapitalScreen() {
     mantraScreen.style.display = "none";
     capitalScreen.style.display = "flex";
 
-    const total = getTotalCapitalC();
-
-const total = getTotalCapitalC();
+ const total = getTotalCapitalC();
 
 const formatted = total.toLocaleString("de-DE", {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2
 }) + " €";
 
-numberField.innerText = "";
-numberField.style.opacity = "1";
+// Zeichen vorbereiten
+let characters = formatted.split("").reverse();
+
+// Euro-Zeichen gleich sichtbar lassen
+let result = "€";
+numberField.innerText = result;
 numberField.style.textAlign = "right";
+numberField.style.opacity = "1";
 
-const chars = formatted.split("").reverse();
-
-let result = "";
 let index = 0;
 
-function animateNextChar() {
+function revealNext() {
 
-  if (index >= chars.length) return;
+  if (index >= characters.length) {
+    
+    // Abschluss-Effekt (sanftes Blinken)
+    setTimeout(() => {
+      numberField.style.transition = "opacity 0.4s ease";
+      numberField.style.opacity = "0";
 
-  const char = chars[index];
+      setTimeout(() => {
+        numberField.style.opacity = "1";
+      }, 200);
 
-  // Nicht-Ziffern (., ,, Leerzeichen, €)
-  if (!/[0-9]/.test(char)) {
-    result = char + result;
-    numberField.innerText = result;
-    index++;
-    setTimeout(animateNextChar, 200);
+    }, 300);
+
     return;
   }
 
-  let target = parseInt(char);
-  let current = 0;
+  const char = characters[index];
 
-  function countUpDigit() {
-
-    // aktuelle Stelle austauschen
-    result = current + result.substring(1);
-    numberField.innerText = result;
-
-    if (current < target) {
-      current++;
-      setTimeout(countUpDigit, 60);
-    } else {
-      index++;
-      setTimeout(animateNextChar, 180);
-    }
+  if (char === "€") {
+    index++;
+    revealNext();
+    return;
   }
 
-  // Neue Stelle hinzufügen
-  result = "0" + result;
+  result = char + result;
   numberField.innerText = result;
 
-  setTimeout(countUpDigit, 100);
+  index++;
+
+  setTimeout(revealNext, 350);   // ← Rhythmus hier steuerbar
 }
 
-setTimeout(animateNextChar, 600);
+// kleine bewusste Pause vor Beginn
+setTimeout(revealNext, 600);   
 
   }, 300);
 }
+
 
 
 function closeCapitalScreen() {
