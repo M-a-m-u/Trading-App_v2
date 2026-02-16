@@ -2300,51 +2300,49 @@ function openCapitalScreen() {
     }) + " €";
 
     numberField.innerText = "";
-    numberField.style.textAlign = "right";
+numberField.style.textAlign = "right";
 
-    let result = "";
-    let chars = formatted.split("").reverse();
-    let index = 0;
+const chars = formatted.split("");
+let displayArray = new Array(chars.length).fill(" ");
 
-    function animateNextChar() {
+let pos = chars.length - 1;
 
-      if (index >= chars.length) return;
+function animateDigitAtPosition() {
 
-      const char = chars[index];
+  if (pos < 0) return;
 
-      // Zeichen wie Punkt, Komma, Leerzeichen, €
-      if (isNaN(char)) {
-        result = char + result;
-        numberField.innerText = result;
-        index++;
-        setTimeout(animateNextChar, 180);
-        return;
-      }
+  const char = chars[pos];
 
-      let targetDigit = parseInt(char);
-      let currentDigit = 0;
+  // Nicht-Ziffern sofort setzen
+  if (isNaN(char)) {
+    displayArray[pos] = char;
+    numberField.innerText = displayArray.join("");
+    pos--;
+    setTimeout(animateDigitAtPosition, 160);
+    return;
+  }
 
-      function spinDigit() {
+  let current = 0;
+  const target = parseInt(char);
 
-        result = currentDigit + result.substring(1);
-        numberField.innerText = result;
+  function spin() {
 
-        if (currentDigit < targetDigit) {
-          currentDigit++;
-          setTimeout(spinDigit, 40);
-        } else {
-          index++;
-          setTimeout(animateNextChar, 120);
-        }
-      }
+    displayArray[pos] = current.toString();
+    numberField.innerText = displayArray.join("");
 
-      result = "0" + result;
-      numberField.innerText = result;
-
-      setTimeout(spinDigit, 100);
+    if (current < target) {
+      current++;
+      setTimeout(spin, 60);
+    } else {
+      pos--;
+      setTimeout(animateDigitAtPosition, 180);
     }
+  }
 
-    setTimeout(animateNextChar, 600);
+  spin();
+}
+
+setTimeout(animateDigitAtPosition, 600);
 
   }, 300);
 }
