@@ -2293,34 +2293,63 @@ function openCapitalScreen() {
 
     const total = getTotalCapitalC();
 
-    const duration = 35000; // ✨ ruhiger & würdevoller
-    const startTime = performance.now();
+const total = getTotalCapitalC();
 
-    numberField.style.opacity = "1";
-    numberField.style.transform = "translateY(0px)";
-    numberField.style.textAlign = "right";
+const formatted = total.toLocaleString("de-DE", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+}) + " €";
 
-    function animate(now) {
+numberField.innerText = "";
+numberField.style.opacity = "1";
+numberField.style.textAlign = "right";
 
-      const progress = Math.min((now - startTime) / duration, 1);
+const chars = formatted.split("").reverse();
 
-      // sehr weiches Ease-Out
-      const eased = 1 - Math.pow(1 - progress, 4);
+let result = "";
+let index = 0;
 
-      const currentValue = total * eased;
+function animateNextChar() {
 
-      numberField.innerText =
-        currentValue.toLocaleString("de-DE", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }) + " €";
+  if (index >= chars.length) return;
 
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      }
+  const char = chars[index];
+
+  // Nicht-Ziffern (., ,, Leerzeichen, €)
+  if (!/[0-9]/.test(char)) {
+    result = char + result;
+    numberField.innerText = result;
+    index++;
+    setTimeout(animateNextChar, 200);
+    return;
+  }
+
+  let target = parseInt(char);
+  let current = 0;
+
+  function countUpDigit() {
+
+    // aktuelle Stelle austauschen
+    result = current + result.substring(1);
+    numberField.innerText = result;
+
+    if (current < target) {
+      current++;
+      setTimeout(countUpDigit, 60);
+    } else {
+      index++;
+      setTimeout(animateNextChar, 180);
     }
+  }
 
-    requestAnimationFrame(animate);
+  // Neue Stelle hinzufügen
+  result = "0" + result;
+  numberField.innerText = result;
+
+  setTimeout(countUpDigit, 100);
+}
+
+setTimeout(animateNextChar, 600);
 
   }, 300);
 }
