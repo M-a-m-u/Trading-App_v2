@@ -2291,62 +2291,36 @@ function openCapitalScreen() {
     mantraScreen.style.display = "none";
     capitalScreen.style.display = "flex";
 
-    // Kapital berechnen
     const total = getTotalCapitalC();
 
-    const formatted = total.toLocaleString("de-DE", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }) + " €";
+    const duration = 3500; // ✨ ruhiger & würdevoller
+    const startTime = performance.now();
 
-  console.log("TOTAL:", total);
-console.log("FORMATTED:", formatted);
-console.log("LENGTH:", formatted.length);
+    numberField.style.opacity = "1";
+    numberField.style.transform = "translateY(0px)";
+    numberField.style.textAlign = "right";
 
-    numberField.innerText = "";
-numberField.style.textAlign = "right";
+    function animate(now) {
 
-const chars = formatted.split("");
-let displayArray = new Array(chars.length).fill(" ");
+      const progress = Math.min((now - startTime) / duration, 1);
 
-let pos = chars.length - 1;
+      // sehr weiches Ease-Out
+      const eased = 1 - Math.pow(1 - progress, 4);
 
-function animateDigitAtPosition() {
+      const currentValue = total * eased;
 
-  if (pos < 0) return;
+      numberField.innerText =
+        currentValue.toLocaleString("de-DE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }) + " €";
 
-  const char = chars[pos];
-
-  // Nicht-Ziffern sofort setzen
-  if (isNaN(char)) {
-    displayArray[pos] = char;
-    numberField.innerText = displayArray.join("");
-    pos--;
-    setTimeout(animateDigitAtPosition, 160);
-    return;
-  }
-
-  let current = 0;
-  const target = parseInt(char);
-
-  function spin() {
-
-    displayArray[pos] = current.toString();
-    numberField.innerText = displayArray.join("");
-
-    if (current < target) {
-      current++;
-      setTimeout(spin, 60);
-    } else {
-      pos--;
-      setTimeout(animateDigitAtPosition, 180);
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
     }
-  }
 
-  spin();
-}
-
-setTimeout(animateDigitAtPosition, 600);
+    requestAnimationFrame(animate);
 
   }, 300);
 }
