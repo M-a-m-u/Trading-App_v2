@@ -1053,7 +1053,7 @@ body.page-open {
 
 <div class="container">
 <div class="page-header">
-  <h1>Mooo Trading Tagebuch</h1>
+  <h1>Mamu Trading Tagebuch</h1>
   <button id="closeBook" aria-labeltitle="Buch schließen"></button>
 </div>
 
@@ -2040,23 +2040,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-    // =========================
-  // iOS Fullscreen-Trigger
+     // =========================
+  // iOS Vollbild erzwingen
   // =========================
 
   setTimeout(() => {
 
-    // Kurz Scroll erlauben → Safari recalculiert Viewport
-    document.body.classList.remove("cover-open");
-    document.body.classList.add("page-open");
+    window.scrollTo(0, 1);
 
-    requestAnimationFrame(() => {
-
-      // Zurück in Startzustand
-      document.body.classList.remove("page-open");
-      document.body.classList.add("cover-open");
-
-    });
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 50);
 
   }, 100);
 
@@ -2404,5 +2398,4 @@ function getTotalCapitalC() {
 </script>
 </body>
 </html>
-
 
