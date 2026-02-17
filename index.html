@@ -1058,7 +1058,7 @@ body.page-open {
 
 <div class="container">
 <div class="page-header">
-  <h1>Maaa Trading Tagebuch</h1>
+  <h1>Mamu Trading Tagebuch</h1>
   <button id="closeBook" aria-labeltitle="Buch schließen"></button>
 </div>
 
@@ -2013,12 +2013,18 @@ function openDepotCard(depotKey) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  function setAppHeight() {
+function setAppHeight() {
   document.documentElement.style
     .setProperty('--app-height', `${window.innerHeight}px`);
 }
 
-setAppHeight();
+// Warten bis wirklich alles da ist
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    setAppHeight();
+  }, 50);   // kleiner iOS-Delay
+});
+
 window.addEventListener('resize', setAppHeight);
 
   // =========================
