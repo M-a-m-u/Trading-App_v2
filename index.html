@@ -1053,7 +1053,7 @@ body.page-open {
 
 <div class="container">
 <div class="page-header">
-  <h1>Mööö Trading Tagebuch</h1>
+  <h1>Mamu Trading Tagebuch</h1>
   <button id="closeBook" aria-labeltitle="Buch schließen"></button>
 </div>
 
@@ -2097,6 +2097,19 @@ document.body.classList.remove("page-open");
           alert("Fehler beim Importieren der Datei.");
           console.error(err);
         }
+
+      // iOS Viewport Fix – einmalig Reflow erzwingen
+setTimeout(() => {
+  document.body.classList.remove("cover-open");
+  document.body.classList.add("page-open");
+
+  requestAnimationFrame(() => {
+    document.body.classList.remove("page-open");
+    document.body.classList.add("cover-open");
+  });
+
+}, 50);  
+
       };
 
       reader.readAsText(file);
@@ -2123,6 +2136,9 @@ function closeDepotCard() {
 
   card.style.display = "none";
 }
+
+
+
 
 
 // ===============================
