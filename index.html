@@ -1053,7 +1053,7 @@ body.page-open {
 
 <div class="container">
 <div class="page-header">
-  <h1>Miau Trading Tagebuch</h1>
+  <h1>Mxxx Trading Tagebuch</h1>
   <button id="closeBook" aria-labeltitle="Buch schließen"></button>
 </div>
 
@@ -2100,20 +2100,29 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-// iOS Standalone Viewport Fix
-setTimeout(() => {
-  document.body.classList.remove("cover-open");
-  document.body.classList.add("page-open");
-
-  requestAnimationFrame(() => {
-    document.body.classList.remove("page-open");
-    document.body.classList.add("cover-open");
-  });
-
-}, 100);
-
 });
 
+// iOS Standalone Viewport Fix – robuster Reflow
+window.addEventListener("load", () => {
+
+  if (!window.navigator.standalone) return;
+
+  setTimeout(() => {
+
+    // Viewport minimal verschieben
+    window.scrollTo(0, 1);
+
+    // Body kurz auf auto setzen
+    document.body.style.height = "auto";
+
+    requestAnimationFrame(() => {
+      document.body.style.height = "100dvh";
+      document.body.classList.add("cover-open");
+    });
+
+  }, 400);
+
+});
 
 
 function closeDepotCard() {
