@@ -2040,6 +2040,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+    // =========================
+  // iOS Fullscreen-Trigger
+  // =========================
+
+  setTimeout(() => {
+
+    // Kurz Scroll erlauben → Safari recalculiert Viewport
+    document.body.classList.remove("cover-open");
+    document.body.classList.add("page-open");
+
+    requestAnimationFrame(() => {
+
+      // Zurück in Startzustand
+      document.body.classList.remove("page-open");
+      document.body.classList.add("cover-open");
+
+    });
+
+  }, 100);
+
   loadAppData();
 
   ["A","B","C"].forEach(d => {
