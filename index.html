@@ -6,6 +6,7 @@
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
 <script>
 (function() {
   document.documentElement.style.height = "101vh";
@@ -14,6 +15,7 @@
   }, 0);
 })();
 </script>
+
 <link rel="apple-touch-icon" href="img/icon.png">
 <title>Mamu Trading Tagebuch</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
@@ -33,7 +35,7 @@ html, body {
 /* Scrollen NUR blockieren, wenn das Cover offen ist */
 body.cover-open {
     height: 100dvh;
-    overflow-y: auto;
+    overflow: hidden;
 }
 
 /* Scrollen ERLAUBEN, sobald die Page offen ist */
@@ -962,8 +964,6 @@ body.page-open {
 </head>
 <body>
 
-<body class="cover-open" style="background:#000;">
-
 
 <!-- =========================
      ZENTRALES POPUP
@@ -1063,7 +1063,7 @@ body.page-open {
 
 <div class="container">
 <div class="page-header">
-  <h1>Meister Trading Tagebuch</h1>
+  <h1>Mega Trading Tagebuch</h1>
   <button id="closeBook" aria-labeltitle="Buch schließen"></button>
 </div>
 
@@ -2110,28 +2110,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-});
-
-// iOS Standalone Viewport Fix – robuster Reflow
-window.addEventListener("load", () => {
-
-  if (!window.navigator.standalone) return;
-
-  setTimeout(() => {
-
-    // Viewport minimal verschieben
-    window.scrollTo(0, 1);
-
-    // Body kurz auf auto setzen
-    document.body.style.height = "auto";
-
-    requestAnimationFrame(() => {
-      document.body.style.height = "100dvh";
-      document.body.classList.add("cover-open");
-    });
-
-  }, 400);
-
 // Hard Viewport Resize Trigger (iOS Standalone Fix)
 setTimeout(() => {
   document.documentElement.style.height = "101vh";
@@ -2142,8 +2120,8 @@ setTimeout(() => {
 
 }, 50);
 
-
 });
+
 
 
 function closeDepotCard() {
