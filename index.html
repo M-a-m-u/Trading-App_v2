@@ -306,7 +306,8 @@ body.page-open {
   inset: 0;
 
   width: 100%;
-  height: 100vhvar(--app-height);
+  height: var(--app-height);
+
 
   background-image: url('img/cover.png');
   background-repeat: no-repeat;
@@ -951,7 +952,7 @@ body.page-open {
 
 </style>
 </head>
-<body>
+<body class="cover-open">
 
 
 <!-- =========================
@@ -1052,7 +1053,7 @@ body.page-open {
 
 <div class="container">
 <div class="page-header">
-  <h1>Mmmm Trading Tagebuch</h1>
+  <h1>Mamu Trading Tagebuch</h1>
   <button id="closeBook" aria-labeltitle="Buch schließen"></button>
 </div>
 
@@ -2056,6 +2057,9 @@ document.addEventListener("DOMContentLoaded", () => {
     mantra.style.display = "none";
   }
 
+  document.body.classList.add("cover-open");
+document.body.classList.remove("page-open");
+
   // ✅ IMPORT-BLOCK GEHÖRT HIER REIN
   const importInput = document.getElementById("importFileInput");
   if (importInput) {
@@ -2093,11 +2097,39 @@ document.addEventListener("DOMContentLoaded", () => {
           alert("Fehler beim Importieren der Datei.");
           console.error(err);
         }
+
+ 
       };
 
       reader.readAsText(file);
     });
   }
+
+// ===========================================
+// iOS PWA – Initial Viewport Recalculation
+// ===========================================
+setTimeout(() => {
+
+  const container = document.querySelector(".container");
+
+  // 1. Scrollmodus kurz wechseln
+  document.body.classList.remove("cover-open");
+  document.body.classList.add("page-open");
+
+  // 2. Container minimal sichtbar machen (unsichtbar für Nutzer)
+  container.style.display = "block";
+  container.style.opacity = "0";
+
+  requestAnimationFrame(() => {
+
+    // 3. Alles wieder in Ausgangszustand
+    container.style.display = "none";
+    document.body.classList.remove("page-open");
+    document.body.classList.add("cover-open");
+
+  });
+
+}, 80);
 
 });
 
@@ -2119,6 +2151,9 @@ function closeDepotCard() {
 
   card.style.display = "none";
 }
+
+
+
 
 
 // ===============================
