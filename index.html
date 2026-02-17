@@ -10,11 +10,6 @@
 <title>Mamu Trading Tagebuch</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
 <style>
-
-:root {
-  --app-height: 100vh;
-}
-
 /*=================================================
 BASIS (HTML / BODY)
 =================================================== */
@@ -29,7 +24,7 @@ html, body {
 
 /* Scrollen NUR blockieren, wenn das Cover offen ist */
 body.cover-open {
-    height: var(--app-height);
+    height: 100dvh;
     overflow: hidden;
 }
 
@@ -44,7 +39,7 @@ body.page-open {
     left: 0;
     width: 100vw;
     /* dynamic viewport height füllt den Bereich inkl. Leisten aus */
-    height: var(--app-height); 
+    height: 100dvh; 
     
     /* Sorgt dafür, dass das Bild das Display füllt ohne zu verzerren */
     object-fit: cover; 
@@ -311,7 +306,7 @@ body.page-open {
   inset: 0;
 
   width: 100%;
-  height: var(--app-height);
+  height: 100dvh;
   min-height: 100%;
 
   background-image: url('img/cover.png');
@@ -957,7 +952,7 @@ body.page-open {
 
 </style>
 </head>
-<body>
+<body class="cover-open">
 
 
 <!-- =========================
@@ -1058,7 +1053,7 @@ body.page-open {
 
 <div class="container">
 <div class="page-header">
-  <h1>Mamu Trading Tagebuch</h1>
+  <h1>Mööö Trading Tagebuch</h1>
   <button id="closeBook" aria-labeltitle="Buch schließen"></button>
 </div>
 
@@ -2013,20 +2008,6 @@ function openDepotCard(depotKey) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-function setAppHeight() {
-  document.documentElement.style
-    .setProperty('--app-height', `${window.innerHeight}px`);
-}
-
-// Warten bis wirklich alles da ist
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    setAppHeight();
-  }, 50);   // kleiner iOS-Delay
-});
-
-window.addEventListener('resize', setAppHeight);
-
   // =========================
   // MIGRATION: Alte Daten → neue AppData-Struktur
   // =========================
@@ -2059,20 +2040,6 @@ window.addEventListener('resize', setAppHeight);
     }
   }
 
-     // =========================
-  // iOS Vollbild erzwingen
-  // =========================
-
-  setTimeout(() => {
-
-    window.scrollTo(0, 1);
-
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-    }, 50);
-
-  }, 100);
-
   loadAppData();
 
   ["A","B","C"].forEach(d => {
@@ -2089,6 +2056,9 @@ window.addEventListener('resize', setAppHeight);
   if (mantra) {
     mantra.style.display = "none";
   }
+
+  document.body.classList.add("cover-open");
+document.body.classList.remove("page-open");
 
   // ✅ IMPORT-BLOCK GEHÖRT HIER REIN
   const importInput = document.getElementById("importFileInput");
