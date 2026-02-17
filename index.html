@@ -24,7 +24,7 @@ html, body {
 
 /* Scrollen NUR blockieren, wenn das Cover offen ist */
 body.cover-open {
-    height: 100dvh;
+    height: 100vh;
     overflow: hidden;
 }
 
@@ -306,8 +306,8 @@ body.page-open {
   inset: 0;
 
   width: 100%;
-  height: var(--app-height);
-
+  height: 100dvh;
+  min-height: 100%;
 
   background-image: url('img/cover.png');
   background-repeat: no-repeat;
@@ -952,7 +952,7 @@ body.page-open {
 
 </style>
 </head>
-<body class="cover-open">
+<body>
 
 
 <!-- =========================
@@ -1053,7 +1053,7 @@ body.page-open {
 
 <div class="container">
 <div class="page-header">
-  <h1>Mamu Trading Tagebuch</h1>
+  <h1>MamÖ Trading Tagebuch</h1>
   <button id="closeBook" aria-labeltitle="Buch schließen"></button>
 </div>
 
@@ -2057,9 +2057,6 @@ document.addEventListener("DOMContentLoaded", () => {
     mantra.style.display = "none";
   }
 
-  document.body.classList.add("cover-open");
-document.body.classList.remove("page-open");
-
   // ✅ IMPORT-BLOCK GEHÖRT HIER REIN
   const importInput = document.getElementById("importFileInput");
   if (importInput) {
@@ -2097,39 +2094,11 @@ document.body.classList.remove("page-open");
           alert("Fehler beim Importieren der Datei.");
           console.error(err);
         }
-
- 
       };
 
       reader.readAsText(file);
     });
   }
-
-// ===========================================
-// iOS PWA – Initial Viewport Recalculation
-// ===========================================
-setTimeout(() => {
-
-  const container = document.querySelector(".container");
-
-  // 1. Scrollmodus kurz wechseln
-  document.body.classList.remove("cover-open");
-  document.body.classList.add("page-open");
-
-  // 2. Container minimal sichtbar machen (unsichtbar für Nutzer)
-  container.style.display = "block";
-  container.style.opacity = "0";
-
-  requestAnimationFrame(() => {
-
-    // 3. Alles wieder in Ausgangszustand
-    container.style.display = "none";
-    document.body.classList.remove("page-open");
-    document.body.classList.add("cover-open");
-
-  });
-
-}, 80);
 
 });
 
@@ -2151,9 +2120,6 @@ function closeDepotCard() {
 
   card.style.display = "none";
 }
-
-
-
 
 
 // ===============================
@@ -2414,15 +2380,6 @@ function getTotalCapitalC() {
   return stockValue + cash;
 }
 
-function fixAppHeight() {
-  const appHeight = window.innerHeight;
-  document.documentElement.style.setProperty('--app-height', appHeight + 'px');
-}
-
-window.addEventListener('resize', fixAppHeight);
-window.addEventListener('orientationchange', fixAppHeight);
-
-fixAppHeight();
 
 </script>
 </body>
