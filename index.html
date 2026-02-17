@@ -1053,7 +1053,7 @@ body.page-open {
 
 <div class="container">
 <div class="page-header">
-  <h1>Mamu Trading Tagebuch</h1>
+  <h1>Mäüö Trading Tagebuch</h1>
   <button id="closeBook" aria-labeltitle="Buch schließen"></button>
 </div>
 
@@ -2098,23 +2098,38 @@ document.body.classList.remove("page-open");
           console.error(err);
         }
 
-      // iOS Viewport Fix – einmalig Reflow erzwingen
-setTimeout(() => {
-  document.body.classList.remove("cover-open");
-  document.body.classList.add("page-open");
-
-  requestAnimationFrame(() => {
-    document.body.classList.remove("page-open");
-    document.body.classList.add("cover-open");
-  });
-
-}, 50);  
-
+ 
       };
 
       reader.readAsText(file);
     });
   }
+
+// ===========================================
+// iOS PWA – Initial Viewport Recalculation
+// ===========================================
+setTimeout(() => {
+
+  const container = document.querySelector(".container");
+
+  // 1. Scrollmodus kurz wechseln
+  document.body.classList.remove("cover-open");
+  document.body.classList.add("page-open");
+
+  // 2. Container minimal sichtbar machen (unsichtbar für Nutzer)
+  container.style.display = "block";
+  container.style.opacity = "0";
+
+  requestAnimationFrame(() => {
+
+    // 3. Alles wieder in Ausgangszustand
+    container.style.display = "none";
+    document.body.classList.remove("page-open");
+    document.body.classList.add("cover-open");
+
+  });
+
+}, 80);
 
 });
 
