@@ -1053,7 +1053,7 @@ body.page-open {
 
 <div class="container">
 <div class="page-header">
-  <h1>TaTa Trading Tagebuch</h1>
+  <h1>Mamu Trading Tagebuch</h1>
   <button id="closeBook" aria-labeltitle="Buch schließen"></button>
 </div>
 
@@ -2099,14 +2099,6 @@ document.addEventListener("DOMContentLoaded", () => {
       reader.readAsText(file);
     });
   }
-
-// iOS Standalone Viewport Fix – sanfter Reflow
-requestAnimationFrame(() => {
-  document.documentElement.style.height = "100.1%";
-  setTimeout(() => {
-    document.documentElement.style.height = "";
-  }, 50);
-});
 
 });
 
