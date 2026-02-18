@@ -39,7 +39,7 @@ body.page-open {
     left: 0;
     width: 100vw;
     /* dynamic viewport height füllt den Bereich inkl. Leisten aus */
-    height: 100svh; 
+    height: 100dvh; 
     
     /* Sorgt dafür, dass das Bild das Display füllt ohne zu verzerren */
     object-fit: cover; 
@@ -2099,15 +2099,6 @@ document.addEventListener("DOMContentLoaded", () => {
       reader.readAsText(file);
     });
   }
-
-// sofortige Viewport-Aktivierung wie bei Page
-document.body.classList.remove("cover-open");
-document.body.classList.add("page-open");
-
-requestAnimationFrame(() => {
-  document.body.classList.remove("page-open");
-  document.body.classList.add("cover-open");
-});
 
 });
 
