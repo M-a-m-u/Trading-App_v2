@@ -6,16 +6,6 @@
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-<script>
-(function() {
-  document.documentElement.style.height = "101vh";
-  setTimeout(() => {
-    document.documentElement.style.height = "100vh";
-  }, 0);
-})();
-</script>
-
 <link rel="apple-touch-icon" href="img/icon.png">
 <title>Mamu Trading Tagebuch</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
@@ -964,8 +954,6 @@ body.page-open {
 </head>
 <body>
 
- <body class="cover-open" style="background:#000;"> 
-
 
 <!-- =========================
      ZENTRALES POPUP
@@ -1065,7 +1053,7 @@ body.page-open {
 
 <div class="container">
 <div class="page-header">
-  <h1>Mamu Trading Tagebuch</h1>
+  <h1>TaTa Trading Tagebuch</h1>
   <button id="closeBook" aria-labeltitle="Buch schließen"></button>
 </div>
 
@@ -2112,15 +2100,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-// Hard Viewport Resize Trigger (iOS Standalone Fix)
-setTimeout(() => {
-  document.documentElement.style.height = "101vh";
-
-  requestAnimationFrame(() => {
-    document.documentElement.style.height = "100vh";
-  });
-
-}, 50);
+// iOS Standalone Viewport Fix – sanfter Reflow
+requestAnimationFrame(() => {
+  document.documentElement.style.height = "100.1%";
+  setTimeout(() => {
+    document.documentElement.style.height = "";
+  }, 50);
+});
 
 });
 
