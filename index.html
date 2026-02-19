@@ -896,25 +896,34 @@ body.page-open {
   align-items: center;
   z-index: 30;
 
-  background: 
-    radial-gradient(circle at 50% 40%, 
-      rgba(80,80,80,0.35),
-      rgba(0,0,0,0.95)
-    );
+  background:
+    linear-gradient(
+      rgba(0,0,0,0.65),
+      rgba(0,0,0,0.85)
+    ),
+    url("img/capital-bg.png");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .capital-inner {
   position: relative;
-  width: 80%;
+
+  width: 85%;
   max-width: 420px;
-  height: 220px;
+  height: 240px;
 
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  border-radius: 18px;
+  background: rgba(10,10,10,0.85);
+  backdrop-filter: blur(6px);
+
+  border-radius: 16px;
 }
 
 .capital-value {
