@@ -916,33 +916,33 @@ body.page-open {
   justify-content: center;
   align-items: center;
 
+  justify-content: center;
+
   background: rgba(10,10,10,0.9);
   border-radius: 14px;
 
-  padding: 0 24px;   /* 👈 DAS IST NEU */
+  padding: 0 12px;   /* 👈 DAS IST NEU 24px */
   box-sizing: border-box; /* 👈 wichtig */
 
 }
 
 .capital-value {
+
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
+
+  width: 100%;              /* 👈 jetzt volle Breite vom schwarzen Feld */
+  max-width: 100%;
+  
   text-align: center;
-  width: 100%;
 
- /*  min-width: 12ch;     */                 /* sorgt für stabile Breite */
-  letter-spacing: 1px;
-
+  padding-left: 12px;
+  padding-right: 16px;
   font-family: "Cinzel Decorative", serif;
-  font-size: 48px;
+  font-size: 40px;
   color: #d8c28a;
 
-  opacity: 0;
-  transform: translateY(20px);
-
-  transition:
-    opacity 1.6s ease,
-    transform 1.6s ease;
+  white-space: nowrap;
 
   text-shadow:
     0 0 8px rgba(216,194,138,0.4),
