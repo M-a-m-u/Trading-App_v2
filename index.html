@@ -910,15 +910,18 @@ body.page-open {
 
   height: 150px;           /* 🔧 Höhe einstellen */
 
-  margin-top: -200px;       /* 🔧 Vertikale Position (negativ = höher) */
+  margin-top: -200px;       /* 🔧 Vertikale Position (negativ = höher) -60px */
 
   display: flex;
   justify-content: center;
   align-items: center;
 
   background: rgba(10,10,10,0.9);
-
   border-radius: 14px;
+
+  padding: 0 24px;   /* 👈 DAS IST NEU */
+  box-sizing: border-box; /* 👈 wichtig */
+
 }
 
 .capital-value {
@@ -2395,5 +2398,4 @@ function getTotalCapitalC() {
 </script>
 </body>
 </html>
-
 
