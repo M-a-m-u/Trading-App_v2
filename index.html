@@ -896,13 +896,7 @@ body.page-open {
   align-items: center;
   z-index: 30;
 
-  background:
-    linear-gradient(
-      rgba(0,0,0,0.65),
-      rgba(0,0,0,0.85)
-    ),
-    url("img/capital-bg.png");
-
+  background-image: url("img/capital-bg.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -911,26 +905,29 @@ body.page-open {
 .capital-inner {
   position: relative;
 
-  width: 85%;
-  max-width: 420px;
-  height: 240px;
+  width: 70%;              /* 🔧 Breite einstellen */
+  max-width: 360px;
+
+  height: 150px;           /* 🔧 Höhe einstellen */
+
+  margin-top: -60px;       /* 🔧 Vertikale Position (negativ = höher) */
 
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  background: rgba(10,10,10,0.85);
-  backdrop-filter: blur(6px);
+  background: rgba(10,10,10,0.9);
 
-  border-radius: 16px;
+  border-radius: 14px;
 }
 
 .capital-value {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
-  text-align: right;
-  min-width: 12ch;                      /* sorgt für stabile Breite */
+  text-align: center;
+  width: 100%;
+
+ /*  min-width: 12ch;     */                 /* sorgt für stabile Breite */
   letter-spacing: 1px;
 
   font-family: "Cinzel Decorative", serif;
@@ -950,13 +947,18 @@ body.page-open {
 }
 
 .capital-close {
-  margin-top: 30px;
+  position: fixed;
+  right: 30px;
+  bottom: 40px;
+
   background: none;
   border: 1px solid #aa845c;
   color: #d8c28a;
   padding: 8px 18px;
   border-radius: 6px;
   cursor: pointer;
+}
+
 }
 
 </style>
