@@ -902,6 +902,64 @@ body.page-open {
   background-repeat: no-repeat;
 }
 
+.capital-overlay {
+  position: fixed;
+  inset: 0;
+
+  background-image: url("img/capital-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  opacity: 1;
+  transition: opacity 0.8s ease;
+
+  z-index: 40;   /* höher als screen-layer */
+  pointer-events: none;
+}
+
+.laser-frame {
+  position: fixed;
+
+  left: 58.5px;
+  top: 247px;
+  width: 273px;
+  height: 150px;
+
+  border: 2px solid rgba(255, 215, 120, 0.9);
+  box-shadow:
+    0 0 8px rgba(255,215,120,0.8),
+    0 0 18px rgba(255,180,0,0.6);
+
+  z-index: 50;
+
+  pointer-events: none;
+
+  opacity: 0;
+}
+
+.laser-frame.animate {
+  opacity: 1;
+  animation: laserDraw 3.6s ease forwards;
+}
+
+@keyframes laserDraw {
+  0% {
+    clip-path: inset(0 100% 100% 0);
+  }
+  25% {
+    clip-path: inset(0 0 100% 0);
+  }
+  50% {
+    clip-path: inset(0 0 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+
+
 .capital-inner {
   position: relative;
 
@@ -1061,6 +1119,9 @@ body.page-open {
 
   </div>
 </div>
+
+<div id="capitalOverlay" class="capital-overlay" style="display:none;"></div>
+<div id="laserFrame" class="laser-frame" style="display:none;"></div>
 
 
 <div id="cover"></div>
@@ -2296,6 +2357,24 @@ function openCapitalScreen() {
   const mantraScreen = document.getElementById("mantraScreen");
   const capitalScreen = document.getElementById("capitalScreen");
   const numberField = document.getElementById("capitalValue");
+  const overlay = document.getElementById("capitalOverlay");
+        overlay.style.display = "block";
+        overlay.style.opacity = "1";
+
+        const laser = document.getElementById("laserFrame");
+
+      laser.style.display = "none";
+      laser.style.opacity = "0";
+      laser.classList.remove("animate");
+ void laser.offsetWidth; // zwingt Browser zum Reset  
+
+ setTimeout(() => {
+  laser.style.display = "block";
+  laser.style.opacity = "1";
+  laser.classList.add("animate");
+}, 800);
+       
+
 
   mantraScreen.style.opacity = "0";
 
@@ -2303,6 +2382,28 @@ function openCapitalScreen() {
 
     mantraScreen.style.display = "none";
     capitalScreen.style.display = "flex";
+
+  // Overlay nach kurzer Ruhe ausblenden
+
+  
+setTimeout(() => {
+
+  // Laser verschwindet sofort wenn Animation endet
+  laser.classList.remove("animate");
+  laser.style.opacity = "0";
+
+  // kleiner Moment ohne Rahmen
+  setTimeout(() => {
+
+    overlay.style.opacity = "0";
+
+    setTimeout(() => {
+      revealNext();
+    }, 1600);
+
+  }, 200);
+
+}, 3600);
 
  const total = getTotalCapitalC();
 
@@ -2357,7 +2458,7 @@ function revealNext() {
 }
 
 // kleine bewusste Pause vor Beginn
-setTimeout(revealNext, 600);   
+ 
 
   }, 300);
 }
@@ -2398,5 +2499,4 @@ function getTotalCapitalC() {
 </script>
 </body>
 </html>
-
 
