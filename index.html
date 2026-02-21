@@ -2294,21 +2294,27 @@ function closeBookToCover() {
 
   mantraScreen.style.opacity = "0";
 
+ setTimeout(() => {
+
+  mantraScreen.style.display = "none";
+
+  cover.style.display = "block";
+
+  requestAnimationFrame(() => {
+    cover.style.opacity = "1";
+    cover.style.transform = "scale(1)";
+  });
+
+  // 🟢 Viewport-Reset für iOS
   setTimeout(() => {
+    window.scrollTo(0, 1);
+    window.scrollTo(0, 0);
+  }, 50);
 
-    mantraScreen.style.display = "none";
+  document.body.classList.remove("page-open");
+  document.body.classList.add("cover-open");
 
-    cover.style.display = "block";
-
-    requestAnimationFrame(() => {
-      cover.style.opacity = "1";
-      cover.style.transform = "scale(1)";
-    });
-
-    document.body.classList.remove("page-open");
-    document.body.classList.add("cover-open");
-
-  }, 400);
+}, 400);
 }
 
 
