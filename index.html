@@ -1020,7 +1020,7 @@ body.page-open {
   cursor: pointer;
 }
 
-}
+
 
 </style>
 </head>
@@ -1920,13 +1920,16 @@ document.getElementById("cover").onclick = function () {
   }, 500);
 };
 
+  // schließt Depot- Page nach Mantra- Seite
 
 document.getElementById("closeBook").addEventListener("click", function () {
 
- appState = "cover";                 // Das ist der Fix
+  if (appState !== "page") return;
+
+  appState = "mantra";
 
   const container = document.querySelector(".container");
-  const cover = document.getElementById("cover");
+  const mantraScreen = document.getElementById("mantraScreen");
 
   container.classList.remove("open");
   container.style.opacity = "0";
@@ -1934,15 +1937,15 @@ document.getElementById("closeBook").addEventListener("click", function () {
   setTimeout(() => {
     container.style.display = "none";
 
-    cover.style.display = "block";
+    mantraScreen.style.display = "flex";
+
     requestAnimationFrame(() => {
-      cover.style.transform = "scale(1)";
-      cover.style.opacity = "1";
+      mantraScreen.style.opacity = "1";
     });
 
     document.body.classList.remove("page-open");
-    document.body.classList.add("cover-open");
-  }, 500);
+  }, 400);
+
 });
 
 function togglePastePreview(show) {
@@ -2201,52 +2204,7 @@ function closeDepotCard() {
 // MANTRA → PAGE
 // ===============================
 
-/*
 
-const mantraScreen = document.getElementById("mantraScreen");
-
-if (mantraScreen) {
-  mantraScreen.onclick = function () {
-
-    if (appState !== "mantra") return;
-    appState = "page";
-
-    const symbol = document.querySelector(".yantra-symbol");
-    const container = document.querySelector(".container");
-
-    // Symbol zurückschrumpfen
-    if (symbol) {
-      symbol.style.transition = "transform 0.4s ease";
-      symbol.style.transform = "scale(1)";
-    }
-
-    setTimeout(() => {
-
-      mantraScreen.style.opacity = "0";
-
-      setTimeout(() => {
-
-        mantraScreen.style.display = "none";
-
-        document.body.classList.remove("cover-open");
-        document.body.classList.add("page-open");
-
-        container.style.display = "block";
-
-        requestAnimationFrame(() => {
-          container.classList.add("open");
-          container.style.opacity = "1";
-        });
-
-        renderTable();
-
-      }, 300);
-
-    }, 400);
-  };
-}
-
-*/
 
 const symbol = document.querySelector(".yantra-symbol");
 
@@ -2315,9 +2273,42 @@ if (direction === "up") {
 
 }
 
+if (direction === "left") {
+  setTimeout(() => {
+    closeBookToCover();
+  }, 800);
+}
+
 
 }, 350);
   });
+}
+
+
+function closeBookToCover() {
+
+  appState = "cover";
+
+  const mantraScreen = document.getElementById("mantraScreen");
+  const cover = document.getElementById("cover");
+
+  mantraScreen.style.opacity = "0";
+
+  setTimeout(() => {
+
+    mantraScreen.style.display = "none";
+
+    cover.style.display = "block";
+
+    requestAnimationFrame(() => {
+      cover.style.opacity = "1";
+      cover.style.transform = "scale(1)";
+    });
+
+    document.body.classList.remove("page-open");
+    document.body.classList.add("cover-open");
+
+  }, 400);
 }
 
 
