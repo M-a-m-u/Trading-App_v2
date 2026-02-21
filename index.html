@@ -1920,16 +1920,13 @@ document.getElementById("cover").onclick = function () {
   }, 500);
 };
 
-  // schließt Depot- Page nach Mantra- Seite
 
 document.getElementById("closeBook").addEventListener("click", function () {
 
-  if (appState !== "page") return;
-
-  appState = "mantra";
+ appState = "mantra";                 // Das ist der Fix
 
   const container = document.querySelector(".container");
-  const mantraScreen = document.getElementById("mantraScreen");
+  const cover = document.getElementById("mantraScreen");
 
   container.classList.remove("open");
   container.style.opacity = "0";
@@ -1937,15 +1934,15 @@ document.getElementById("closeBook").addEventListener("click", function () {
   setTimeout(() => {
     container.style.display = "none";
 
-    mantraScreen.style.display = "flex";
-
+    cover.style.display = "block";
     requestAnimationFrame(() => {
-      mantraScreen.style.opacity = "1";
+      cover.style.transform = "scale(1)";
+      cover.style.opacity = "1";
     });
 
     document.body.classList.remove("page-open");
-  }, 400);
-
+    document.body.classList.add("mantra-open");
+  }, 500);
 });
 
 function togglePastePreview(show) {
@@ -2273,48 +2270,9 @@ if (direction === "up") {
 
 }
 
-if (direction === "left") {
-  setTimeout(() => {
-    closeBookToCover();
-  }, 800);
-}
-
 
 }, 350);
   });
-}
-
-
-function closeBookToCover() {
-
-  appState = "cover";
-
-  const mantraScreen = document.getElementById("mantraScreen");
-  const cover = document.getElementById("cover");
-
-  mantraScreen.style.opacity = "0";
-
- setTimeout(() => {
-
-  mantraScreen.style.display = "none";
-
-  cover.style.display = "block";
-
-  requestAnimationFrame(() => {
-    cover.style.opacity = "1";
-    cover.style.transform = "scale(1)";
-  });
-
-  // 🟢 Viewport-Reset für iOS
-  setTimeout(() => {
-    window.scrollTo(0, 1);
-    window.scrollTo(0, 0);
-  }, 50);
-
-  document.body.classList.remove("page-open");
-  document.body.classList.add("cover-open");
-
-}, 400);
 }
 
 
