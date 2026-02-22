@@ -545,7 +545,7 @@ body.page-open {
 #closeBook {
   position: absolute;
   top: 40px;
-  right: 25px;
+  left: 25px;
 
   width: 28px;
   height: 28px;
@@ -565,6 +565,39 @@ body.page-open {
 #closeBook:active {
   background: rgba(230, 217, 193, 0.8);
 }
+
+#goToMantra {
+  position: absolute;
+  top: 40px;
+  right: 25px;
+
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+
+  background: rgba(230, 217, 193, 0.55);
+  color: transparent;
+
+  cursor: pointer;
+  z-index: 50;
+
+  box-shadow: none;
+  transition: background 0.25s ease;
+}
+
+#goToMantra:hover {
+  background: rgba(235, 148, 36, 0.87);
+  transform: scale(1.08);
+}
+
+#goToMantra:active {
+  background: rgba(230, 217, 193, 0.8);
+}
+
+
+
+
 
 /* ======================================
    Seiten-Container (Page)
@@ -1130,6 +1163,7 @@ body.page-open {
 <div class="page-header">
   <h1>Mamu Trading Tagebuch</h1>
   <button id="closeBook" aria-labeltitle="Buch schließen"></button>
+  <button id="goToMantra" aria-label="Zur Mantra-Seite"></button>
 </div>
 
 <div class="button-container">
@@ -1921,12 +1955,14 @@ document.getElementById("cover").onclick = function () {
 };
 
 
-document.getElementById("closeBook").addEventListener("click", function () {
+function goToCoverWithPageLogic() {
 
- appState = "cover";                 // Das ist der Fix
+  appState = "cover";
 
   const container = document.querySelector(".container");
   const cover = document.getElementById("cover");
+
+  if (!container || !cover) return;
 
   container.classList.remove("open");
   container.style.opacity = "0";
@@ -1943,6 +1979,64 @@ document.getElementById("closeBook").addEventListener("click", function () {
     document.body.classList.remove("page-open");
     document.body.classList.add("cover-open");
   }, 500);
+}
+
+function goToMantraFromPage() {
+
+  appState = "mantra";
+
+  const container = document.querySelector(".container");
+  const mantraScreen = document.getElementById("mantraScreen");
+
+  if (!container || !mantraScreen) return;
+
+  container.classList.remove("open");
+  container.style.opacity = "0";
+
+  setTimeout(() => {
+    container.style.display = "none";
+
+    mantraScreen.style.display = "flex";
+
+    requestAnimationFrame(() => {
+      mantraScreen.style.opacity = "1";
+    });
+
+    document.body.classList.remove("page-open");
+    document.body.classList.add("cover-open");
+  }, 500);
+}
+
+function forcePageReflowThenGoToCover() {
+
+  const container = document.querySelector(".container");
+
+  if (!container) return;
+
+  // Step 1: kurz in open-Zustand
+  container.style.display = "block";
+  container.classList.add("open");
+
+  // Step 2: minimaler Delay → dann wieder schließen
+  setTimeout(() => {
+
+    container.classList.remove("open");
+    container.style.opacity = "0";
+
+    setTimeout(() => {
+      container.style.display = "none";
+      goToCoverWithPageLogic();
+    }, 300);
+
+  }, 50);
+}
+
+document.getElementById("closeBook").addEventListener("click", function () {
+  goToCoverWithPageLogic();
+});
+
+document.getElementById("goToMantra").addEventListener("click", function () {
+  goToMantraFromPage();
 });
 
 function togglePastePreview(show) {
@@ -2272,7 +2366,7 @@ if (direction === "up") {
 
 if (direction === "left") {
   setTimeout(() => {
-    closeBookToCover();
+    forcePageReflowThenGoToCover();
   }, 800);
 }
 
@@ -2306,6 +2400,9 @@ function closeBookToCover() {
 
   }, 400);
 }
+
+
+
 
 
 function openPage() {
