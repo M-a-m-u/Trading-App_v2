@@ -954,16 +954,22 @@ body.page-open {
 .laser-frame {
   position: fixed;
 
-  left: 58.5px;
+  left: 195px;
+
   top: 247px;
-  width: 273px;
+  width: 136px;
   height: 150px;
 
-  border: 2px solid rgba(255, 215, 120, 0.9);
-  box-shadow:
-    0 0 8px rgba(255,215,120,0.8),
-    0 0 18px rgba(255,180,0,0.6);
+  background: rgba(10,10,10,0.9);
 
+clip-path: polygon(
+  0% 100%,
+  0% 100%,
+  0% 100%,
+  0% 100%
+);
+
+ 
   z-index: 50;
 
   pointer-events: none;
@@ -971,21 +977,82 @@ body.page-open {
   opacity: 0;
 }
 
+#laserFrameLeft {
+  position: fixed;
+
+  left: 58.0px;
+  top: 247px;
+  width: 137px;
+  height: 150px;
+
+  background: rgba(10,10,10,0.9);
+
+  clip-path: polygon(
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    100% 100%
+  );
+
+  
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0;
+}
+
+
 .laser-frame.animate {
   opacity: 1;
-  animation: laserDraw 3.6s ease forwards;
+  animation: laserDraw 5.6s ease forwards;
 }
+
+
+#laserFrameLeft.animate {
+  opacity: 1;
+  animation: laserDrawLeft 4.6s ease forwards;
+}
+
 
 @keyframes laserDraw {
   0% {
-    clip-path: inset(0 100% 100% 0);
+    clip-path: inset(100% 100% 0 0);
   }
+
   25% {
-    clip-path: inset(0 0 100% 0);
+    clip-path: inset(0 100% 0 0);
   }
+
   50% {
     clip-path: inset(0 0 0 0);
   }
+
+  75% {
+    clip-path: inset(0 0 0 0);
+  }
+
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+
+@keyframes laserDrawLeft {
+  0% {
+    clip-path: inset(100% 0 0 100%);
+  }
+
+  25% {
+    clip-path: inset(0 0 0 100%);
+  }
+
+  50% {
+    clip-path: inset(0 0 0 0);
+  }
+
+  75% {
+    clip-path: inset(0 0 0 0);
+  }
+
   100% {
     clip-path: inset(0 0 0 0);
   }
@@ -1155,6 +1222,7 @@ body.page-open {
 
 <div id="capitalOverlay" class="capital-overlay" style="display:none;"></div>
 <div id="laserFrame" class="laser-frame" style="display:none;"></div>
+<div id="laserFrameLeft" class="laser-frame" style="display:none;"></div>
 
 
 <div id="cover"></div>
@@ -2007,29 +2075,7 @@ function goToMantraFromPage() {
   }, 500);
 }
 
-function forcePageReflowThenGoToCover() {
 
-  const container = document.querySelector(".container");
-
-  if (!container) return;
-
-  // Step 1: kurz in open-Zustand
-  container.style.display = "block";
-  container.classList.add("open");
-
-  // Step 2: minimaler Delay → dann wieder schließen
-  setTimeout(() => {
-
-    container.classList.remove("open");
-    container.style.opacity = "0";
-
-    setTimeout(() => {
-      container.style.display = "none";
-      goToCoverWithPageLogic();
-    }, 300);
-
-  }, 50);
-}
 
 document.getElementById("closeBook").addEventListener("click", function () {
   goToCoverWithPageLogic();
@@ -2366,7 +2412,7 @@ if (direction === "up") {
 
 if (direction === "left") {
   setTimeout(() => {
-    forcePageReflowThenGoToCover();
+    closeBookToCover();
   }, 800);
 }
 
@@ -2376,6 +2422,8 @@ if (direction === "left") {
 }
 
 function closeBookToCover() {
+
+console.log("CLOSE BOOK TO COVER");
 
   appState = "cover";
 
@@ -2446,16 +2494,28 @@ function openCapitalScreen() {
         overlay.style.opacity = "1";
 
         const laser = document.getElementById("laserFrame");
+        const laserLeft = document.getElementById("laserFrameLeft");
 
       laser.style.display = "none";
       laser.style.opacity = "0";
       laser.classList.remove("animate");
  void laser.offsetWidth; // zwingt Browser zum Reset  
 
+
+      laserLeft.style.display = "none";
+      laserLeft.style.opacity = "0";
+      laserLeft.classList.remove("animate");
+void laserLeft.offsetWidth;
+
  setTimeout(() => {
   laser.style.display = "block";
   laser.style.opacity = "1";
   laser.classList.add("animate");
+
+  laserLeft.style.display = "block";
+  laserLeft.style.opacity = "1";
+  laserLeft.classList.add("animate");
+
 }, 800);
        
 
@@ -2473,11 +2533,17 @@ function openCapitalScreen() {
 setTimeout(() => {
 
   // Laser verschwindet sofort wenn Animation endet
-  laser.classList.remove("animate");
-  laser.style.opacity = "0";
+ 
+
 
   // kleiner Moment ohne Rahmen
   setTimeout(() => {
+
+  laser.classList.remove("animate");
+  laser.style.opacity = "0";
+
+  laserLeft.classList.remove("animate");
+  laserLeft.style.opacity = "0";
 
     overlay.style.opacity = "0";
 
