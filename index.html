@@ -1003,31 +1003,31 @@ clip-path: polygon(
 
 .laser-frame.animate {
   opacity: 1;
-  animation: laserDraw 5.6s ease forwards;
+  animation: laserDraw 5.2s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+  transform-origin: left center;
 }
 
 
 #laserFrameLeft.animate {
   opacity: 1;
-  animation: laserDrawLeft 4.6s ease forwards;
+  animation: laserDrawLeft 5.2s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+  transform-origin: right center;
 }
 
 
 @keyframes laserDraw {
+
   0% {
+    transform: translateX(-8px);
     clip-path: inset(100% 100% 0 0);
   }
 
-  25% {
+  8% {
+    transform: translateX(0px);
+  }
+
+  40% {
     clip-path: inset(0 100% 0 0);
-  }
-
-  50% {
-    clip-path: inset(0 0 0 0);
-  }
-
-  75% {
-    clip-path: inset(0 0 0 0);
   }
 
   100% {
@@ -1037,20 +1037,18 @@ clip-path: polygon(
 
 
 @keyframes laserDrawLeft {
+
   0% {
-    clip-path: inset(100% 0 0 100%);
+    transform: translateX(8px);
+    clip-path: inset(100% 100% 0 0);
   }
 
-  25% {
+  8% {
+    transform: translateX(0px);
+  }
+
+  40% {
     clip-path: inset(0 0 0 100%);
-  }
-
-  50% {
-    clip-path: inset(0 0 0 0);
-  }
-
-  75% {
-    clip-path: inset(0 0 0 0);
   }
 
   100% {
