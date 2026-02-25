@@ -1143,11 +1143,120 @@ clip-path: polygon(
   cursor: pointer;
 }
 
+#closeHistory {
+  position: absolute;
+  top: 40px;
+  right: 25px;
+
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+
+  background: rgba(230, 217, 193, 0.55);
+  color: transparent;
+
+  cursor: pointer;
+  z-index: 50;
+
+  box-shadow: none;
+  transition: background 0.25s ease;
+}
+
+.history-inner {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+#historyOverlay .button-container button {
+  width: 44%;
+}
+
+.history-table {
+  margin-top: 24px;
+}
+
+.history-header {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr 1fr 60px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #5b3a21;
+
+  background: #e6d9c1;
+  border: 1px solid #aa845c;
+  border-radius: 5px;
+
+  padding: 6px 0px;
+}
+
+.history-header > div {
+  text-align: center;
+}
+
+#historyOverlay {
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+#historyOverlay .history-inner {
+  width: 100%;
+  max-width: 420px;
+}
 
 
 </style>
 </head>
 <body>
+
+<div id="historyOverlay" style="
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 9999;
+  background-image: url('img/page.png');
+  background-repeat: repeat-y;
+  background-size: 100% auto;
+  background-position: top center;
+  overflow-y: auto;
+  padding-top: calc(env(safe-area-inset-top) + 0px);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 24px);
+  padding-left: 16px;
+  padding-right: 16px;
+  box-sizing: border-box;
+">
+  
+  <div class="history-inner">
+
+    <div class="page-header">
+      <h1>Mamu Trading<br>History</h1>
+      <button id="closeHistory"></button>
+    </div>
+
+    <div class="button-container">
+      <button class="button-add">Performance</button>
+      <button class="button-update">Aktualisieren</button>
+    </div>
+  
+  <div class="history-table">
+
+  <div class="history-header">
+    <div>Datum</div>
+    <div>Depot</div>
+    <div>Cash</div>
+    <div>Total</div>
+    <div>Aktion</div>
+  </div>
+
+</div>  
+
+</div>
+</div>
+
+
+
 
 
 <!-- =========================
@@ -1216,6 +1325,8 @@ clip-path: polygon(
   <span class="mantra-line">Śrīṁ Mahā Lakṣmyai</span>
   <span class="mantra-line">Namaḥ</span>
 </div>
+
+<button onclick="openHistoryOverlay()">History Test</button>
 
     </div>
 
@@ -1762,6 +1873,10 @@ function triggerImport() {
 
 function renderTable(){
   function fillTable(dep,tableId){
+
+  // 🔥 Automatisch nach höchstem Depotwert sortieren
+  dep.sort((a, b) => (b.amount * b.price) - (a.amount * a.price));
+
     let table=document.getElementById(tableId);
     table.innerHTML="<tr><th>Name</th><th>Anzahl</th><th>Kurs (€)</th><th>Wert (€)</th><th>Aktion</th></tr>";
     dep.forEach((item,i)=>{
@@ -2340,7 +2455,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
+function sortDepotByValue(depotId) {
 
+  const table = document.getElementById(depotId);
+  const tbody = table.querySelector("tbody");
+
+  const rows = Array.from(tbody.querySelectorAll("tr"));
+
+  // Erste Zeile ist Header → nicht sortieren
+  const header = rows.shift();
+
+  rows.sort((a, b) => {
+
+    const valueA = parseFloat(
+      a.children[3].textContent
+        .replace(/\./g, "")    // Tausenderpunkte entfernen
+        .replace(",", ".")     // Komma zu Punkt
+    );
+
+    const valueB = parseFloat(
+      b.children[3].textContent
+        .replace(/\./g, "")
+        .replace(",", ".")
+    );
+
+    return valueB - valueA; // absteigend
+  });
+
+  // Tabelle neu aufbauen
+  tbody.innerHTML = "";
+  tbody.appendChild(header);
+  rows.forEach(row => tbody.appendChild(row));
+}
 
 function closeDepotCard() {
   const card = document.getElementById("depotCard");
@@ -2701,6 +2847,17 @@ function getTotalCapitalC() {
 
   return stockValue + cash;
 }
+
+function openHistoryOverlay() {
+  document.getElementById("historyOverlay").style.display = "block";
+}
+
+function closeHistoryOverlay() {
+  document.getElementById("historyOverlay").style.display = "none";
+}
+
+document.getElementById("closeHistory")
+  .addEventListener("click", closeHistoryOverlay);
 
 
 </script>
