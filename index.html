@@ -1143,6 +1143,11 @@ clip-path: polygon(
   cursor: pointer;
 }
 
+/* =========================
+   HISTORY SCREEN – BASIS
+   ========================= */
+
+
 #closeHistory {
   position: absolute;
   top: 40px;
@@ -1188,12 +1193,14 @@ clip-path: polygon(
   border: 1px solid #aa845c;
   border-radius: 5px;
 
-  padding: 6px 0px;
+  padding: 6px 4px;
 }
 
-.history-header > div {
-  text-align: center;
-}
+.history-header > div:nth-child(1) { text-align: center; }
+.history-header > div:nth-child(2) { text-align: center; }
+.history-header > div:nth-child(3) { text-align: center; }
+.history-header > div:nth-child(4) { text-align: center; }
+.history-header > div:nth-child(5) { text-align: center; }
 
 #historyOverlay {
   display: none;
@@ -1206,6 +1213,53 @@ clip-path: polygon(
   max-width: 420px;
 }
 
+.history-table {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  height: 60vh; /* wichtig: Höhe definieren */
+}
+
+.history-body {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.history-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr 1fr 60px;
+  align-items: center;              /* <-- DAS ist wichtig */
+  font-size: 14px;
+  border: 1px solid #aa845c;
+  border-top: none;
+  padding: 6px 4px;
+  background: rgba(255,255,255,0.85);
+
+.history-row > div:nth-child(1) { text-align: left; }
+.history-row > div:nth-child(2),
+.history-row > div:nth-child(3),
+.history-row > div:nth-child(4) { text-align: right; }
+
+}
+
+.history-row > div {
+  text-align: center;
+}
+
+.history-row button {
+  width: auto;
+}
+
+.history-row .button-del {
+  padding: 2px 4px;     /* kleiner als in Tabelle */
+  font-size: 11px;
+  
+ }
+
+.history-row > div:last-child {
+  display: flex;
+  justify-content: center;
+}
 
 </style>
 </head>
@@ -1249,6 +1303,180 @@ clip-path: polygon(
     <div>Total</div>
     <div>Aktion</div>
   </div>
+
+  <div class="history-body">
+    <!-- Datensätze kommen später hier rein -->
+
+  <div class="history-row">
+  <div>19.03.25</div>
+  <div>125000</div>
+  <div>15000</div>
+  <div>140000</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>18.03.25</div>
+  <div>126000</div>
+  <div>14000</div>
+  <div>140000</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>17.03.25</div>
+  <div>124000</div>
+  <div>18000</div>
+  <div>142000</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>16.03.25</div>
+  <div>123500</div>
+  <div>17000</div>
+  <div>140500</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>15.03.25</div>
+  <div>125800</div>
+  <div>13000</div>
+  <div>138800</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>14.03.25</div>
+  <div>127200</div>
+  <div>12000</div>
+  <div>139200</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>18.03.25</div>
+  <div>126000</div>
+  <div>14000</div>
+  <div>140000</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>17.03.25</div>
+  <div>124000</div>
+  <div>18000</div>
+  <div>142000</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>16.03.25</div>
+  <div>123500</div>
+  <div>17000</div>
+  <div>140500</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>15.03.25</div>
+  <div>125800</div>
+  <div>13000</div>
+  <div>138800</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>14.03.25</div>
+  <div>127200</div>
+  <div>12000</div>
+  <div>139200</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>18.03.25</div>
+  <div>126000</div>
+  <div>14000</div>
+  <div>140000</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>17.03.25</div>
+  <div>124000</div>
+  <div>18000</div>
+  <div>142000</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>16.03.25</div>
+  <div>123500</div>
+  <div>17000</div>
+  <div>140500</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>15.03.25</div>
+  <div>125800</div>
+  <div>13000</div>
+  <div>138800</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>14.03.25</div>
+  <div>127200</div>
+  <div>12000</div>
+  <div>139200</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>18.03.25</div>
+  <div>126000</div>
+  <div>14000</div>
+  <div>140000</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>17.03.25</div>
+  <div>124000</div>
+  <div>18000</div>
+  <div>142000</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>16.03.25</div>
+  <div>123500</div>
+  <div>17000</div>
+  <div>140500</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>15.03.25</div>
+  <div>125800</div>
+  <div>13000</div>
+  <div>138800</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+<div class="history-row">
+  <div>14.03.25</div>
+  <div>127200</div>
+  <div>12000</div>
+  <div>139200</div>
+  <div><button class="button-del">ENTF</button></div>
+</div>
+
+  </div>
+
 
 </div>  
 
