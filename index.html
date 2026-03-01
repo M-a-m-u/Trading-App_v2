@@ -475,6 +475,16 @@ body.page-open {
   color: #fff;
 }
 
+.button-import:hover {
+  background: linear-gradient(
+    180deg,
+    #f0b982,
+    #d89049
+  );
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
 
 
 
@@ -1261,6 +1271,84 @@ clip-path: polygon(
   justify-content: center;
 }
 
+.history-update-panel {
+  margin-top: 16px;
+  padding: 14px 16px;
+
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(2px);
+
+  border: 1px solid rgba(150, 110, 60, 0.35);
+  border-radius: 10px;
+
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+
+  animation: fadeInCard 0.25s ease;
+}
+
+@keyframes fadeInCard {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.history-update-panel input {
+  padding: 8px 10px;
+
+  border-radius: 6px;
+  border: 1px solid rgba(120, 80, 40, 0.35);
+
+  background: rgba(255, 255, 255, 0.9);
+
+  font-size: 14px;
+
+  outline: none;
+}
+
+.history-update-panel input:focus {
+  border-color: #b08a56;
+  box-shadow: 0 0 0 2px rgba(176, 138, 86, 0.2);
+}
+
+.history-update-panel.active {
+  display: flex;   /* wenn geöffnet */
+}
+
+#historySaveBtn {
+  align-self: flex-end;
+  padding: 6px 12px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: linear-gradient(145deg, #caa35f, #b88c45);
+  color: white;
+
+  cursor: pointer;
+
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+#historySaveBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.history-row-highlight {
+  background: rgba(200, 60, 40, 0.15);
+  transition: background 0.2s ease;
+}
+
+
 </style>
 </head>
 <body>
@@ -1291,8 +1379,27 @@ clip-path: polygon(
 
     <div class="button-container">
       <button class="button-add">Performance</button>
-      <button class="button-update">Aktualisieren</button>
+   <button id="historyUpdateToggle" class="button-update">
+     Aktualisieren
+   </button>
     </div>
+
+  <div id="historyUpdatePanel" class="history-update-panel">
+
+  <input type="date" id="historyDate">
+
+  <input type="number" id="historyDepot" placeholder="Depot">
+
+  <input type="number" id="historyCash" placeholder="Cash">
+
+  <button id="historySaveBtn">Speichern</button>
+
+</div>
+
+
+
+</div>
+
   
   <div class="history-table">
 
@@ -1660,23 +1767,23 @@ clip-path: polygon(
   <h2 style="position:relative;">
     <span class="section-label">Depot-Vergleich</span>
 
-    <button
-      class="button-export"
-      onclick="saveTodayToHistory()"
-      style="
-        position:absolute;
-        right: 35px;
-        bottom: 20px;
-        height:50px;
-        width:80px;
-        font-size:13px;
-        line-height:1.2;
-        border-radius: 6px;
-        font-family: 'Palatino Linotype', Palatino, serif;
-      "
-    >
-      Speichern<br>History
-    </button>
+  <button
+  class="button-import"
+  onclick="saveTodayToHistory()"
+  style="
+    position:absolute;
+    right:28px;
+    bottom:20px;
+    height:32px;
+    width:80px;
+    font-size:13px;
+    border-radius:6px;
+    font-family:'Palatino Linotype', Palatino, serif;
+    border:none;
+  "
+>
+  History
+</button> 
 
   </h2>
 
@@ -1749,11 +1856,15 @@ clip-path: polygon(
 
 
 
+
+
+
 let appState = "cover"; 
 // mögliche Werte: "cover" | "mantra" | "page"
 
-function formatNumber(num){ return Number(num).toLocaleString('de-DE',{minimumFractionDigits:2, maximumFractionDigits:2}); }
-
+function formatNumber(num){
+  return Math.round(Number(num)).toLocaleString('de-DE');
+}
 
 
 const STORAGE_KEY = "mamu-trading-app-data";
@@ -1929,24 +2040,6 @@ function updateAll() {
 }
 
 
-function addTestHistoryEntry() {
-
-  const entry = {
-    date: new Date().toISOString().slice(0,10),
-    depot: 125000,
-    cash: 15000,
-    total: 140000
-  };
-
-  appData.history.push(entry);
-  saveAppData();
-
-  renderHistory();   // <-- NEU
-
-  console.log("History-Eintrag hinzugefügt:", entry);
-}
-
-
 function renderHistory() {
 
   const container = document.querySelector(".history-body");
@@ -1954,21 +2047,58 @@ function renderHistory() {
 
   container.innerHTML = "";
 
-  appData.history.forEach(entry => {
+  appData.history
+    .slice()
+    .sort((a,b) => new Date(b.date) - new Date(a.date))
+    .forEach((entry) => {
 
-    const row = document.createElement("div");
-    row.className = "history-row";
+      const row = document.createElement("div");
+      row.className = "history-row";
 
-    row.innerHTML = `
-      <div>${entry.date}</div>
-      <div>${formatNumber(entry.depot)}</div>
-      <div>${formatNumber(entry.cash)}</div>
-      <div>${formatNumber(entry.total)}</div>
-      <div><button class="button-del">ENTF</button></div>
-    `;
+      row.innerHTML = `
+        <div>${formatDate(entry.date)}</div>
+        <div>${formatNumber(entry.depot)}</div>
+        <div>${formatNumber(entry.cash)}</div>
+        <div>${formatNumber(entry.total)}</div>
+        <div>
+          <button class="button-del">
+            ENTF
+          </button>
+        </div>
+      `;
 
-    container.appendChild(row);
-  });
+      container.appendChild(row);
+
+      row.querySelector(".button-del").addEventListener("click", function () {
+
+  row.classList.add("history-row-highlight");
+
+  setTimeout(() => {
+
+    const confirmed = confirm(
+      `Eintrag vom ${formatDate(entry.date)} wirklich löschen?`
+    );
+
+    if (!confirmed) {
+      row.classList.remove("history-row-highlight");
+      return;
+    }
+
+    const realIndex = appData.history.findIndex(
+      item => item.date === entry.date
+    );
+
+    if (realIndex !== -1) {
+      appData.history.splice(realIndex, 1);
+      saveAppData();
+      renderHistory();
+    }
+
+  }, 50); // kleine Verzögerung für Rendering
+
+});
+
+    });
 }
 
 
@@ -2994,6 +3124,12 @@ function getTotalCapitalC() {
 //  }
 
 
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("de-DE");
+}
+
+
 function openHistoryOverlay() {
 
   const overlay = document.getElementById("historyOverlay");
@@ -3012,6 +3148,95 @@ function closeHistoryOverlay() {
 document.getElementById("closeHistory")
   .addEventListener("click", closeHistoryOverlay);
 
+
+ function saveTodayToHistory() {
+
+  const today = new Date().toISOString().slice(0,10);
+
+  // Prüfen ob für heute schon gespeichert wurde
+  const alreadyExists = appData.history.some(entry => entry.date === today);
+
+  if (alreadyExists) {
+    alert("Für heute existiert bereits ein History-Eintrag.");
+    return;
+  }
+
+  // Gesamtwert und Cash von Depot C holen
+  const totalValueField = document.getElementById("totalValueC");
+  const total = parseFloat(
+    totalValueField.value.replace(/\./g,"").replace(",",".")
+  ) || 0;
+
+  const cash = appData.cash.C || 0;
+
+  const entry = {
+    date: today,
+    depot: total - cash,
+    cash: cash,
+    total: total
+  };
+
+  appData.history.push(entry);
+  saveAppData();
+  renderHistory();
+
+  openHistoryOverlay();
+} 
+
+
+document.getElementById("historySaveBtn")
+  .addEventListener("click", function () {
+
+    const date = document.getElementById("historyDate").value;
+    const depot = parseFloat(document.getElementById("historyDepot").value);
+    const cash = parseFloat(document.getElementById("historyCash").value);
+
+    if (!date || isNaN(depot) || isNaN(cash)) {
+      alert("Bitte alle Felder korrekt ausfüllen.");
+      return;
+    }
+
+    const alreadyExists = appData.history.some(entry => entry.date === date);
+
+    if (alreadyExists) {
+      alert("Für dieses Datum existiert bereits ein Eintrag.");
+      return;
+    }
+
+    const total = depot + cash;
+
+    appData.history.push({
+      date: date,
+      depot: depot,
+      cash: cash,
+      total: total
+    });
+
+    saveAppData();
+    renderHistory();
+
+    // Panel schließen und Felder leeren
+    document.getElementById("historyUpdatePanel")
+    .classList.remove("active");
+    document.getElementById("historyDate").value = "";
+    document.getElementById("historyDepot").value = "";
+    document.getElementById("historyCash").value = "";
+
+});
+
+document.getElementById("historyUpdateToggle")
+  .addEventListener("click", function () {
+
+    const panel = document.getElementById("historyUpdatePanel");
+
+    console.log("Toggle geklickt");
+    console.log("Hat active:", panel.classList.contains("active"));
+
+    panel.classList.toggle("active");
+
+    console.log("Nach Toggle active:", panel.classList.contains("active"));
+
+});
 
 </script>
 </body>
