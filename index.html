@@ -1349,39 +1349,63 @@ clip-path: polygon(
 }
 
 .history-performance-panel {
-  margin-top: 16px;
-  padding: 16px;
+  margin-top: 18px;
+  padding: 18px;
   background: rgba(255,255,255,0.75);
-  border-radius: 10px;
+  border-radius: 12px;
   display: none;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
 }
 
 .history-performance-panel.active {
   display: flex;
 }
 
-.performance-row {
-  display: grid;
-  grid-template-columns: 70px 90px 70px 1fr;
-  align-items: center;
+.performance-item {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
+}
+
+.performance-top {
+  display: grid;
+  grid-template-columns: 55px minmax(90px,1fr) 75px minmax(110px,1fr);
+  align-items: end;
   font-size: 14px;
 }
 
+.perf-label {
+  font-weight: 500;
+}
+
+.perf-diff,
+.perf-percent,
+.perf-start {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.perf-start {
+  opacity: 0.7;
+}
+
+.perf-bar-wrapper {
+  padding-left: 70px; /* gleiche Breite wie Label */
+}
+
 .perf-bar {
-  height: 6px;
-  background: rgba(0,0,0,0.1);
-  border-radius: 4px;
+  height: 8px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 5px;
   overflow: hidden;
 }
 
 .perf-fill {
   height: 100%;
   width: 0%;
-  background: #4caf50;
-  transition: width 0.4s ease;
+  border-radius: 5px;
+  transition: width 0.45s ease;
 }
 
 
@@ -1435,33 +1459,93 @@ clip-path: polygon(
 </div>
 
 <div id="historyPerformancePanel" class="history-performance-panel">
-  <div class="performance-row">
-    <div>Woche</div>
-    <div class="perf-value" id="perfWeekValue">–</div>
+
+ <!-- <div class="performance-row"> -->
+
+  <div class="performance-item">
+
+  <div class="performance-top">
+    <div class="perf-label">Tag</div>
+    <div class="perf-diff" id="perfDayValue">–</div>
+    <div class="perf-percent" id="perfDayPercent">–</div>
+    <div class="perf-start" id="perfDayStart">–</div>
+  </div>
+
+  <div class="perf-bar-wrapper">
+    <div class="perf-bar">
+      <div class="perf-fill" id="perfDayBar"></div></div>
+  </div>
+
+</div>
+
+  
+<div class="performance-item">
+
+  <div class="performance-top">
+    <div class="perf-label">Woche</div>
+    <div class="perf-diff" id="perfWeekValue">–</div>
     <div class="perf-percent" id="perfWeekPercent">–</div>
-    <div class="perf-bar"><div class="perf-fill" id="perfWeekBar"></div></div>
+    <div class="perf-start" id="perfWeekStart">–</div>
   </div>
 
-  <div class="performance-row">
-    <div>Monat</div>
-    <div class="perf-value" id="perfMonthValue">–</div>
+  <div class="perf-bar-wrapper">
+    <div class="perf-bar">
+      <div class="perf-fill" id="perfWeekBar"></div></div>
+  </div>
+
+</div>
+
+
+<div class="performance-item">
+
+  <div class="performance-top">
+    <div class="perf-label">Monat</div>
+    <div class="perf-diff" id="perfMonthValue">–</div>
     <div class="perf-percent" id="perfMonthPercent">–</div>
-    <div class="perf-bar"><div class="perf-fill" id="perfMonthBar"></div></div>
+    <div class="perf-start" id="perfMonthStart">–</div>
   </div>
 
-  <div class="performance-row">
-    <div>Jahr</div>
-    <div class="perf-value" id="perfYearValue">–</div>
+  <div class="perf-bar-wrapper">
+    <div class="perf-bar">
+      <div class="perf-fill" id="perfMonthBar"></div></div>
+  </div>
+
+</div>
+
+
+<div class="performance-item">
+
+  <div class="performance-top">
+    <div class="perf-label">Jahr</div>
+    <div class="perf-diff" id="perfYearValue">–</div>
     <div class="perf-percent" id="perfYearPercent">–</div>
-    <div class="perf-bar"><div class="perf-fill" id="perfYearBar"></div></div>
+    <div class="perf-start" id="perfYearStart">–</div>
   </div>
 
-  <div class="performance-row">
-    <div>Gesamt</div>
-    <div class="perf-value" id="perfTotalValue">–</div>
-    <div class="perf-percent" id="perfTotalPercent">–</div>
-    <div class="perf-bar"><div class="perf-fill" id="perfTotalBar"></div></div>
+  <div class="perf-bar-wrapper">
+    <div class="perf-bar">
+      <div class="perf-fill" id="perfYearBar"></div></div>
   </div>
+
+</div>
+
+  
+<div class="performance-item">
+
+  <div class="performance-top">
+    <div class="perf-label">Gesamt</div>
+    <div class="perf-diff" id="perfTotalValue">–</div>
+    <div class="perf-percent" id="perfTotalPercent">–</div>
+    <div class="perf-start" id="perfTotalStart">–</div>
+  </div>
+
+  <div class="perf-bar-wrapper">
+    <div class="perf-bar">
+      <div class="perf-fill" id="perfTotalBar"></div></div>
+  </div>
+
+</div>
+
 </div>
 
 </div>
@@ -2167,6 +2251,149 @@ function renderHistory() {
     });
 }
 
+
+function calculatePerformance(period) {
+
+  if (!appData.history || appData.history.length < 2) {
+    return null;
+  }
+
+  const history = [...appData.history]
+    .sort((a,b) => new Date(a.date) - new Date(b.date));
+
+  const latest = history[history.length - 1];
+  const todayDate = new Date(latest.date);
+
+  let startEntry = null;
+
+  if (period === "day") {
+
+    if (history.length < 2) return null;
+
+    startEntry = history[history.length - 2];
+
+  }
+
+  if (period === "week") {
+
+    const firstDay = new Date(todayDate);
+    const day = firstDay.getDay() || 7;
+    firstDay.setDate(firstDay.getDate() - day + 1);
+    firstDay.setHours(0,0,0,0);
+
+    startEntry = history.find(entry => 
+      new Date(entry.date) >= firstDay
+    );
+
+  }
+
+  if (period === "month") {
+
+    startEntry = history.find(entry => {
+      const d = new Date(entry.date);
+      return d.getMonth() === todayDate.getMonth() &&
+             d.getFullYear() === todayDate.getFullYear();
+    });
+
+  }
+
+  if (period === "year") {
+
+    startEntry = history.find(entry => 
+      new Date(entry.date).getFullYear() === todayDate.getFullYear()
+    );
+
+  }
+
+  if (period === "total") {
+
+    startEntry = history[0];
+
+  }
+
+  if (!startEntry) return null;
+
+  const startValue = startEntry.total;
+  const currentValue = latest.total;
+
+  if (startValue === 0) return null;
+
+  const diff = currentValue - startValue;
+  const percent = (diff / startValue) * 100;
+
+  return {
+    diff,
+    percent,
+    startValue,
+    currentValue
+  };
+
+}
+
+
+
+function updatePerformanceDisplay() {
+
+  const periods = ["day","week","month","year","total"];
+
+  let results = {};
+
+  periods.forEach(period => {
+    results[period] = calculatePerformance(period);
+  });
+
+  // Größten absoluten Prozentwert für relative Balken bestimmen
+  const maxPercent = Math.max(
+    ...periods.map(p => results[p] ? Math.abs(results[p].percent) : 0),
+    1
+  );
+
+  periods.forEach(period => {
+
+    const result = results[period];
+
+    const valueEl   = document.getElementById("perf" + capitalize(period) + "Value");
+    const percentEl = document.getElementById("perf" + capitalize(period) + "Percent");
+    const startEl   = document.getElementById("perf" + capitalize(period) + "Start");
+    const barEl     = document.getElementById("perf" + capitalize(period) + "Bar");
+
+    if (!result) {
+      valueEl.textContent   = "–";
+      percentEl.textContent = "–";
+      startEl.textContent   = "–";
+      barEl.style.width     = "0%";
+      return;
+    }
+
+    // Formatierung mit 2 Nachkommastellen + €
+    valueEl.textContent   = formatEuro(result.diff);
+    percentEl.textContent = result.percent.toFixed(2) + " %";
+    startEl.textContent   = formatEuro(result.startValue);
+
+    const width = (Math.abs(result.percent) / maxPercent) * 100;
+    barEl.style.width = width + "%";
+
+    if (result.percent >= 0) {
+      barEl.style.background = "linear-gradient(90deg,#6fbf73,#2e7d32)";
+    } else {
+      barEl.style.background = "linear-gradient(90deg,#ef5350,#b71c1c)";
+    }
+
+  });
+
+}
+
+function formatEuro(num) {
+  return Number(num).toLocaleString("de-DE", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }) + " €";
+}
+
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 
 function exportAppData() {
@@ -3309,6 +3536,10 @@ document.querySelector(".button-add")
 
     const panel = document.getElementById("historyPerformancePanel");
     panel.classList.toggle("active");
+
+    if (panel.classList.contains("active")) {
+      updatePerformanceDisplay();
+    }
 
 });
 
