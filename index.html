@@ -1348,6 +1348,44 @@ clip-path: polygon(
   transition: background 0.2s ease;
 }
 
+.history-performance-panel {
+  margin-top: 16px;
+  padding: 16px;
+  background: rgba(255,255,255,0.75);
+  border-radius: 10px;
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.history-performance-panel.active {
+  display: flex;
+}
+
+.performance-row {
+  display: grid;
+  grid-template-columns: 70px 90px 70px 1fr;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.perf-bar {
+  height: 6px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.perf-fill {
+  height: 100%;
+  width: 0%;
+  background: #4caf50;
+  transition: width 0.4s ease;
+}
+
+
+
 
 </style>
 </head>
@@ -1396,7 +1434,35 @@ clip-path: polygon(
 
 </div>
 
+<div id="historyPerformancePanel" class="history-performance-panel">
+  <div class="performance-row">
+    <div>Woche</div>
+    <div class="perf-value" id="perfWeekValue">–</div>
+    <div class="perf-percent" id="perfWeekPercent">–</div>
+    <div class="perf-bar"><div class="perf-fill" id="perfWeekBar"></div></div>
+  </div>
 
+  <div class="performance-row">
+    <div>Monat</div>
+    <div class="perf-value" id="perfMonthValue">–</div>
+    <div class="perf-percent" id="perfMonthPercent">–</div>
+    <div class="perf-bar"><div class="perf-fill" id="perfMonthBar"></div></div>
+  </div>
+
+  <div class="performance-row">
+    <div>Jahr</div>
+    <div class="perf-value" id="perfYearValue">–</div>
+    <div class="perf-percent" id="perfYearPercent">–</div>
+    <div class="perf-bar"><div class="perf-fill" id="perfYearBar"></div></div>
+  </div>
+
+  <div class="performance-row">
+    <div>Gesamt</div>
+    <div class="perf-value" id="perfTotalValue">–</div>
+    <div class="perf-percent" id="perfTotalPercent">–</div>
+    <div class="perf-bar"><div class="perf-fill" id="perfTotalBar"></div></div>
+  </div>
+</div>
 
 </div>
 
@@ -3235,6 +3301,14 @@ document.getElementById("historyUpdateToggle")
     panel.classList.toggle("active");
 
     console.log("Nach Toggle active:", panel.classList.contains("active"));
+
+});
+
+document.querySelector(".button-add")
+  .addEventListener("click", function () {
+
+    const panel = document.getElementById("historyPerformancePanel");
+    panel.classList.toggle("active");
 
 });
 
