@@ -1356,6 +1356,8 @@ clip-path: polygon(
   display: none;
   flex-direction: column;
   gap: 18px;
+  max-width: 90%;
+  margin: 0 auto;
 }
 
 .history-performance-panel.active {
@@ -1370,7 +1372,7 @@ clip-path: polygon(
 
 .performance-top {
   display: grid;
-  grid-template-columns: 55px minmax(90px,1fr) 75px minmax(110px,1fr);
+  grid-template-columns: 45px minmax(90px,1fr) 75px minmax(110px,1fr);
   align-items: end;
   font-size: 14px;
 }
@@ -2368,7 +2370,11 @@ function updatePerformanceDisplay() {
     // Formatierung mit 2 Nachkommastellen + €
     valueEl.textContent   = formatEuro(result.diff);
     percentEl.textContent = result.percent.toFixed(2) + " %";
-    startEl.textContent   = formatEuro(result.startValue);
+    if (period === "day") {
+  startEl.textContent = formatEuro(result.currentValue);
+} else {
+  startEl.textContent = formatEuro(result.startValue);
+}
 
     const width = (Math.abs(result.percent) / maxPercent) * 100;
     barEl.style.width = width + "%";
