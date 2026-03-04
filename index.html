@@ -1356,7 +1356,7 @@ clip-path: polygon(
   display: none;
   flex-direction: column;
   gap: 18px;
-  max-width: 90%;
+  max-width: 85%;
   margin: 0 auto;
 }
 
@@ -1372,9 +1372,10 @@ clip-path: polygon(
 
 .performance-top {
   display: grid;
-  grid-template-columns: 45px minmax(90px,1fr) 75px minmax(110px,1fr);
+  grid-template-columns: 48px 1fr 65px 1fr;
   align-items: end;
   font-size: 14px;
+  font-variant-numeric: tabular-nums;
 }
 
 .perf-label {
@@ -1389,7 +1390,7 @@ clip-path: polygon(
 }
 
 .perf-start {
-  opacity: 0.7;
+  opacity: 1;
 }
 
 .perf-bar-wrapper {
@@ -1410,8 +1411,35 @@ clip-path: polygon(
   transition: width 0.45s ease;
 }
 
+.performance-head {
+  display: grid;
+  grid-template-columns: 50px 1fr 70px 1fr;
+  font-size: 12px;
+  opacity: 0.65;
+  margin-bottom: 0px;
+}
 
 
+
+.performance-head div {
+  text-align: right;
+}
+
+.performance-head div:first-child {
+  text-align: left;
+}
+
+.performance-head div:nth-child(2) {
+  padding-right: 10px;
+}
+
+.performance-head div:nth-child(3) {
+  padding-right: 10px;
+}
+
+.performance-head div:nth-child(4) {
+  padding-right: 12px;
+}
 
 </style>
 </head>
@@ -1463,6 +1491,13 @@ clip-path: polygon(
 <div id="historyPerformancePanel" class="history-performance-panel">
 
  <!-- <div class="performance-row"> -->
+
+  <div class="performance-head">
+  <div></div>
+  <div>Δ Betrag</div>
+  <div>Δ %</div>
+  <div>Basis</div>
+</div>
 
   <div class="performance-item">
 
