@@ -576,6 +576,30 @@ body.page-open {
   background: rgba(230, 217, 193, 0.8);
 }
 
+#historyCloseBook {
+  position: absolute;
+  top: 40px;
+  left: 25px;
+
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+
+  background: rgba(230, 217, 193, 0.55);
+  color: transparent;
+
+  cursor: pointer;
+  z-index: 50;
+
+  box-shadow: none;
+  transition: background 0.25s ease;
+}
+
+#historyCloseBook:active {
+  background: rgba(230, 217, 193, 0.8);
+}
+
 #goToMantra {
   position: absolute;
   top: 40px;
@@ -1465,9 +1489,12 @@ clip-path: polygon(
   <div class="history-inner">
 
     <div class="page-header">
-      <h1>Mamu Trading<br>History</h1>
-      <button id="closeHistory"></button>
-    </div>
+  <h1>Mamu Trading<br>History</h1>
+
+  <button id="historyCloseBook" aria-label="Buch schließen"></button>
+
+  <button id="closeHistory"></button>
+</div>
 
     <div class="button-container">
       <button class="button-add">Performance</button>
@@ -3581,6 +3608,14 @@ document.querySelector(".button-add")
     if (panel.classList.contains("active")) {
       updatePerformanceDisplay();
     }
+
+});
+
+document.getElementById("historyCloseBook").addEventListener("click", function () {
+
+  document.getElementById("historyOverlay").style.display = "none";
+
+  closeBookToCover();
 
 });
 
