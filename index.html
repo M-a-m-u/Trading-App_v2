@@ -866,13 +866,10 @@ body.page-open {
 
 .mantra-inner {
 
- transform: translateZ(40px) translateY(40px);  /* "Y" verschiebt das Symbol nach oben/ unten  40 px vorher */
+  transform: translateZ(40px) translateY(40px);  /* "Y" verschiebt das Symbol nach oben/ unten  40 px vorher */
 
- position: relative;
- z-index: 2;
- 
-
-
+  position: relative;
+  z-index: 2;
   text-align: center;
   padding: 40px 200px;
 }
@@ -1040,14 +1037,14 @@ clip-path: polygon(
 
 .laser-frame.animate {
   opacity: 1;
-  animation: laserDraw 5.2s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+  animation: laserDraw 3.2s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
   transform-origin: left center;
 }
 
 
 #laserFrameLeft.animate {
   opacity: 1;
-  animation: laserDrawLeft 5.2s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+  animation: laserDrawLeft 3.2s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
   transform-origin: right center;
 }
 
@@ -3350,11 +3347,11 @@ setTimeout(() => {
 
     setTimeout(() => {
       revealNext();
-    }, 1600);
+    }, 1000);
 
   }, 200);
 
-}, 5600);
+}, 3600);
 
  const total = getTotalCapitalC();
 
