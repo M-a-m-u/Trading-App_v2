@@ -2497,10 +2497,10 @@ function renderTable(){
 
   // 🔥 Automatisch nach höchstem Depotwert sortieren
   dep.sort((a, b) => (b.amount * b.price) - (a.amount * a.price));
-
+    const sortedDep = [...dep].sort((a, b) => (b.amount * b.price) - (a.amount * a.price));
     let table=document.getElementById(tableId);
     table.innerHTML="<tr><th>Name</th><th>Anzahl</th><th>Kurs (€)</th><th>Wert (€)</th><th>Aktion</th></tr>";
-    dep.forEach((item,i)=>{
+    sortedDep.forEach((item,i)=>{
       let row=table.insertRow();
       let nameCell=row.insertCell(); nameCell.innerText=item.name; nameCell.className="name-cell";
 
@@ -2638,12 +2638,37 @@ function toggleUpdate() {
   container.innerHTML = "";
   container.style.display = "flex";
 
-  let allNames = [];
-  [depotA, depotB, depotC].forEach(dep => {
-    dep.forEach(item => {
-      if (!allNames.includes(item.name)) allNames.push(item.name);
-    });
+ // Alle Namen sammeln (A, B, C)
+let allNames = [];
+[depotA, depotB, depotC].forEach(dep => {
+  dep.forEach(item => {
+    if (!allNames.includes(item.name)) allNames.push(item.name);
   });
+});
+
+// Depot C nach Wert sortieren
+const sortedDepotC = [...depotC].sort((a,b)=>(b.amount*b.price)-(a.amount*a.price));
+const orderMap = {};
+sortedDepotC.forEach((item,index)=>{
+  orderMap[item.name] = index;
+});
+
+// Reihenfolge von Depot C übernehmen
+allNames.sort((a,b)=>{
+
+  const indexA = orderMap[a];
+  const indexB = orderMap[b];
+
+  if(indexA === undefined && indexB === undefined){
+    return a.localeCompare(b);
+  }
+
+  if(indexA === undefined) return 1;
+  if(indexB === undefined) return -1;
+
+  return indexA - indexB;
+
+});
 
   allNames.forEach(name => {
     let div = document.createElement("div");
