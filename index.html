@@ -33,22 +33,6 @@ body.page-open {
     overflow-y: auto;
 }
 
-.buch-cover {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    /* dynamic viewport height füllt den Bereich inkl. Leisten aus */
-    height: 100dvh; 
-    
-    /* Sorgt dafür, dass das Bild das Display füllt ohne zu verzerren */
-    object-fit: cover; 
-    
-    /* Sicherheitsmaßnahme für ältere iOS Versionen */
-    padding-bottom: env(safe-area-inset-bottom);
-}
-
-
 
 /*==================================================
   TYPOGRAFIE
@@ -1739,7 +1723,7 @@ clip-path: polygon(
 
 <div class="container">
 <div class="page-header">
-  <h1>Mamu Trading Tagebuch</h1>
+  <h1>2026 Trading Tagebuch</h1>
   <button id="closeBook" aria-labeltitle="Buch schließen"></button>
   <button id="goToMantra" aria-label="Zur Mantra-Seite"></button>
 </div>
@@ -3651,6 +3635,13 @@ function fixViewportHeight() {
 
 fixViewportHeight();
 window.addEventListener('resize', fixViewportHeight);
+
+window.addEventListener("load", function () {
+  setTimeout(function () {
+    window.scrollTo(0,1);
+    window.scrollTo(0,0);
+  }, 50);
+});
 
 </script>
 </body>
