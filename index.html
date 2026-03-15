@@ -18,7 +18,7 @@ html, body {
     margin: 0;
     padding: 0;
     width: 100%;
-    min-height: calc(100dvh + 1px);
+    min-height: 100%;
     background-color: #000;
 }
 
@@ -32,6 +32,22 @@ body.cover-open {
 body.page-open {
     overflow-y: auto;
 }
+
+.buch-cover {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    /* dynamic viewport height füllt den Bereich inkl. Leisten aus */
+    height: 100dvh; 
+    
+    /* Sorgt dafür, dass das Bild das Display füllt ohne zu verzerren */
+    object-fit: cover; 
+    
+    /* Sicherheitsmaßnahme für ältere iOS Versionen */
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
 
 
 /*==================================================
@@ -290,7 +306,7 @@ body.page-open {
   inset: 0;
 
   width: 100%;
-  height: calc(var(--vh) * 100);
+  height: 100dvh;
   min-height: 100%;
 
   background-image: url('img/cover.png');
@@ -620,44 +636,45 @@ body.page-open {
 /* ======================================
    Seiten-Container (Page)
    ====================================== */
-   .container {
-  display: none;
+  .container {
+visibility: hidden;
+pointer-events: none;
 
-  width: 100%;
-  max-width: 420px;
-  margin: 0 auto;
+width: 100%;
+max-width: 420px;
+margin: 0 auto;
 
-  background-image: url('img/page.png');
-  background-repeat: repeat-y;
-  background-size: 100% auto;
-  background-position: top center;
+background-image: url('img/page.png');
+background-repeat: repeat-y;
+background-size: 100% auto;
+background-position: top center;
 
-  /* HIER passiert die Magie */
-  padding-top: calc(env(safe-area-inset-top) + 0px);
-  padding-bottom: calc(env(safe-area-inset-bottom) + 24px);
-  padding-left: 16px;
-  padding-right: 16px;
+padding-top: calc(env(safe-area-inset-top) + 0px);
+padding-bottom: calc(env(safe-area-inset-bottom) + 24px);
+padding-left: 16px;
+padding-right: 16px;
 
-  box-sizing: border-box;
+box-sizing: border-box;
 
-  height: auto;
+height: auto;
 
-  position: relative;
-  z-index: 1;
+position: relative;
+z-index: 1;
 
-  overflow-x: hidden;
+overflow-x: hidden;
 
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
+opacity: 0;
+transform: translateY(30px);
+transition: opacity 0.8s ease, transform 0.8s ease;
 }
    
 /* DAS HIER DANACH */
   .container.open {
-  display: block;
-  opacity: 1;
-  transform: translateY(0);
-  }
+visibility: visible;
+pointer-events: auto;
+opacity: 1;
+transform: translateY(0);
+}
 
 #closeBook:hover {
   background: rgba(150, 100, 50, 0.95);
@@ -1723,7 +1740,7 @@ clip-path: polygon(
 
 <div class="container">
 <div class="page-header">
-  <h1>MMMM Trading Tagebuch</h1>
+  <h1>1111 Trading Tagebuch</h1>
   <button id="closeBook" aria-labeltitle="Buch schließen"></button>
   <button id="goToMantra" aria-label="Zur Mantra-Seite"></button>
 </div>
@@ -3623,24 +3640,6 @@ document.getElementById("historyCloseBook").addEventListener("click", function (
 
   closeBookToCover();
 
-});
-
-
-function fixViewportHeight() {
-  document.documentElement.style.setProperty(
-    '--vh',
-    window.innerHeight * 0.01 + 'px'
-  );
-}
-
-fixViewportHeight();
-window.addEventListener('resize', fixViewportHeight);
-
-window.addEventListener("load", function () {
-  setTimeout(function () {
-    window.scrollTo(0,1);
-    window.scrollTo(0,0);
-  }, 50);
 });
 
 </script>
