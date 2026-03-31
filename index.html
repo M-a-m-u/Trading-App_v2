@@ -1,299 +1,1995 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Route Check 2026 - Final Classic Pro</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        :root { 
-            --bg: #020617; --card: #1e293b; --primary: #3b82f6; --text: #f8fafc; --accent: #22c55e; --done: #475569; 
-        }
-        
-        html, body { height: 100%; margin: 0; padding: 0; background: #000; overflow: hidden; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; flex-direction: column; padding-top: env(safe-area-inset-top); }
 
-        /* COVER SYSTEM */
-        #coverScreen { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 9999; 
-            display: flex; justify-content: center; align-items: center; 
-            cursor: pointer; transition: opacity 1.2s ease-in-out; 
-        }
-        #coverDark, #coverLight { position: absolute; width: 100%; height: 100%; object-fit: cover; transition: opacity 2s ease-in-out; }
-        #startText { 
-            position: absolute; bottom: 25%; color: white; font-weight: 300; 
-            letter-spacing: 3px; z-index: 10001; 
-            text-shadow: 0 0 10px rgba(0,0,0,0.8);
-            transition: opacity 0.5s ease-out; /* Schnelles Ausblenden */
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="IMG/med-icon.png">
 
-        /* APP LAYOUT */
-        #appContainer { display: none; flex: 1; flex-direction: column; background: var(--bg); opacity: 0; transition: opacity 1.5s ease-in; }
-        
-        /* HEADER - SYMMETRISCH & GROSS */
-        .header { 
-            background: var(--card); padding: 10px 15px; 
-            display: grid; 
-            grid-template-columns: 1.1fr 1fr 0.8fr 0.4fr; 
-            align-items: center; 
-            border-bottom: 1px solid #334155; z-index: 5000; 
-        }
-        .header-left { font-size: 0.65rem; color: #94a3b8; font-weight: bold; line-height: 1.1; }
-        .header-center { text-align: center; white-space: nowrap; }
-        #nextDist { font-size: 1.8rem; font-weight: 900; color: var(--accent); }
-        .unit-m { font-size: 0.8rem; color: #94a3b8; margin-left: 2px; font-weight: bold; }
+<title>MED – Mobiler Entstörungsdienst</title>
 
-        .header-next { text-align: center; }
-        #next-num { 
-            font-size: 1.8rem; font-weight: 900; color: #fff; 
-            background: #0f172a; padding: 0 10px; border-radius: 8px; 
-            border: 1px solid var(--primary); display: inline-block; min-width: 45px; 
-        }
+<style>
 
-        .header-right { text-align: right; }
-        .btn-close { color: #ef4444; font-size: 1.8rem; cursor: pointer; font-weight: 900; }
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:#50d857;
+color:white;
+text-align:center;
+}
 
-        .controls { background: var(--card); padding: 8px 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; border-bottom: 1px solid #334155; }
-        select { background: #0f172a; color: white; border: 1px solid #334155; padding: 10px; border-radius: 10px; font-size: 0.85rem; outline: none; -webkit-appearance: none; }
-        
-        /* MAP */
-        #map-wrapper { flex: 1; position: relative; overflow: hidden; background: #000; }
-        #map { width: 200%; height: 200%; position: absolute; top: -50%; left: -50%; z-index: 1; }
+/* Cover */
 
-        .map-btn { position: absolute; right: 15px; width: 50px; height: 50px; background: rgba(30, 41, 59, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 2000; border: 1px solid #475569; font-size: 1.2rem; backdrop-filter: blur(5px); }
-        #btn-theme { top: 15px; }
-        #btn-nav { top: 75px; color: var(--primary); }
+#cover{
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+height:100dvh;
+cursor:pointer;
+}
 
-        /* FOOTER - TRANSPARENT CLASSIC */
-        .bottom-bar { 
-            background: rgba(30, 41, 59, 0.7); 
-            padding: 10px 20px; 
-            padding-bottom: calc(10px + env(safe-area-inset-bottom));
-            border-top: 1px solid #334155; 
-            z-index: 5000; 
-            backdrop-filter: blur(10px);
-        }
-        .prog-bg { width: 100%; background: #020617; height: 8px; border-radius: 4px; border: 1px solid #334155; overflow: hidden; margin-bottom: 8px; }
-        #progBar { width: 0%; height: 100%; background: var(--accent); transition: width 0.5s; }
-        .footer-content { display: flex; justify-content: space-between; align-items: center; color: #94a3b8; font-size: 0.8rem; font-weight: bold; }
+#cover h1{
+font-size:4.2em;
+margin-bottom:10px;
+}
 
-        .user-location-icon { width: 22px; height: 22px; background: #3b82f6; border: 3px solid white; border-radius: 50%; box-shadow: 0 0 15px rgba(59, 130, 246, 0.8); }
-        .number-icon { background: var(--primary); color: white; border-radius: 50%; text-align: center; line-height: 26px; font-weight: 800; border: 2px solid white; font-size: 12px; transition: all 0.4s; }
-        .number-icon.done { background: var(--done) !important; opacity: 0.3; border-color: transparent; }
-    </style>
+#cover p{
+font-size:1em;
+opacity:0.8;
+}
+
+/* Hauptseite */
+
+#mainPage{
+display:none;
+padding:20px;
+}
+
+h2{
+margin-top:20px;
+}
+
+.feld{
+margin-top:15px;
+display:flex;
+flex-direction:column;
+}
+
+.grid2{
+display:grid;
+grid-template-columns:repeat(2, minmax(0,1fr));
+gap:15px;
+margin-top:20px;
+}
+
+input, select{
+width:100%;
+box-sizing:border-box;
+height:42px;
+padding:6px 10px;
+font-size:16px;
+border-radius:8px;
+border:none;
+margin-top:5px;
+}
+
+/* iPhone Fix für Datumfeld */
+
+input[type="date"]{
+appearance:none;
+-webkit-appearance:none;
+
+width:100%;
+max-width:100%;
+
+height:42px;
+line-height:42px;
+
+box-sizing:border-box;
+font-size:16px;
+padding:0 8px;
+}
+
+.zeitGrid input{
+min-width:0;
+width:100%;
+}
+
+#datum,
+#schicht,
+#wagen,
+#kollege{
+text-align:center;
+text-align-last: center;
+}
+
+#neuerEinsatz{
+margin-top:30px;
+padding:12px;
+font-size:16px;
+border:none;
+border-radius:10px;
+background:white;
+color:#50d857;
+font-weight:bold;
+cursor:pointer;
+width:100%;
+}
+
+#einsatzListe{
+margin-top:25px;
+}
+
+.einsatz{
+background:white;
+color:black;
+padding:15px;
+border-radius:10px;
+margin-top:15px;
+text-align:left;
+}
+
+.einsatzFeld{
+margin-top:10px;
+display:flex;
+flex-direction:column;
+}
+
+.einsatzFeldGross{  
+margin-top:12px;
+display:flex;
+flex-direction:column;
+}
+
+.einsatzFeldGross textarea{
+width:100%;
+box-sizing:border-box;
+padding:10px;
+font-size:16px;
+border-radius:8px;
+border:1px solid #ccc;
+margin-top:5px;
+resize:none;
+overflow:hidden;
+}
+
+.einsatzFeld input,
+.einsatzFeld textarea{
+padding:10px;
+font-size:16px;
+border-radius:8px;
+border:1px solid #ccc;
+margin-top:4px;
+
+height: 40px;
+line-height: 20px;
+overflow: hidden;
+}
+
+.einsatzFeld textarea{
+font-family: inherit;
+line-height: 22px;
+height: 18px;
+resize: none;
+}
+
+.zeitGrid{
+display:grid;
+grid-template-columns:repeat(3, minmax(0,1fr));
+gap:8px;
+margin-top:10px;
+width:100%;
+}
+
+/* iPhone Fix für Zeitfelder */
+
+.zeitGrid input[type="time"]{
+appearance:none;
+-webkit-appearance:none;
+
+width:100%;
+max-width:100%;
+
+min-width:0;
+
+height:40px;
+
+box-sizing:border-box;
+font-size:15px;
+padding:0 4px;
+}
+
+.zeitGrid .einsatzFeld:nth-child(2) label,
+.zeitGrid .einsatzFeld:nth-child(3) label{
+  text-align: center;
+  padding-right: 10px;
+}
+
+.einsatzHeader{
+padding-left: 0px;  
+display:flex;
+justify-content:space-between;
+align-items:center;
+cursor:pointer;
+}
+
+.toggleSymbol{
+font-size:18px;
+}
+
+.einsatzInhalt{
+margin-top:10px;
+}
+
+.einsatzTitel{
+margin: 8px 8px 8px 8px;
+padding:0;
+font-weight:bold;
+line-height: 1.2;
+}
+
+.einsatzAdresse{
+  font-weight: normal;
+  font-size: 0.95em;
+  color: #444;
+}
+
+.einsatzFeld label{
+  padding-left: 10px;
+}
+
+.einsatzFeldGross label{
+  padding-left: 10px;
+}
+
+.lockBtn{
+  cursor:pointer;
+  margin-left:10px;
+  font-size:18px;
+
+  background:none;
+  border:none;
+  padding:0;
+}
+
+
+#tagSpeichern{
+margin-top:25px;
+padding:12px;
+font-size:16px;
+border:none;
+border-radius:10px;
+background:#0575d1;
+color:white;
+font-weight:bold;
+cursor:pointer;
+width:100%;
+}
+
+
+
+.historieEintrag{
+text-align:left;
+margin:10px 12px;
+}
+
+.historieHeader{
+
+cursor:pointer;
+font-weight:bold;
+
+display:grid;
+grid-template-columns: 
+
+18px     /* Pfeil */
+95px    /* Datum */
+60px     /* Schicht */
+70px     /* Wagen */
+1fr;     /* Name */
+
+gap:6px;
+
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+
+align-items:center;
+
+}
+
+
+.historieInhalt{
+padding-left:20px;
+margin-top:8px;
+}
+
+.historieEinsatz{
+text-align:left;
+margin-top:8px;
+margin-left: -18px;;
+}
+
+.historieEinsatzHeader{
+cursor:pointer;
+font-weight:bold;
+padding-left: 42px;
+text-indent: -42px;
+}
+
+.historieEinsatzInhalt{
+padding-left:20px;
+margin-top:6px;
+}
+
+#historieButton{
+margin-top:25px;
+padding:12px;
+font-size:16px;
+border:none;
+border-radius:10px;
+background:#07810d;
+color:white;
+font-weight:bold;
+cursor:pointer;
+width:100%;
+}
+
+#zurueckZurApp{
+margin-top:10px;
+padding:10px;
+width:100%;
+border:none;
+border-radius:8px;
+background:#50d857;
+color:white;
+}
+
+#zurueckZurHistorie{
+margin-top:10px;
+padding:10px;
+width:100%;
+border:none;
+border-radius:8px;
+background:#444;
+color:white;
+}
+
+.tagLoeschenButton{
+margin-top:10px;
+padding:8px;
+color:#c40000;
+font-weight:bold;
+cursor:pointer;
+}
+
+.historieLoeschenEinsatz{
+color:#c40000;
+margin-right:6px;
+cursor:pointer;
+}
+
+#historiePage{
+/* display:flex; */
+flex-direction:column;
+height:100vh;
+overflow:hidden;
+}
+
+#historiePage h2{
+flex:0 0 auto;
+margin-top:20px;
+text-align:center;
+position: sticky;
+top:0;
+}
+
+
+#historieListe{
+flex:1;
+overflow-y:auto;
+padding:5px 5px;
+margin-top:0px;
+}
+
+#historieFooter{
+flex:0 0 auto;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:12px;
+padding: 0px 0 25px 0;
+}
+
+
+.jsonButtons{
+display:flex;
+gap:15px;
+justify-content:center;
+}
+
+.jsonButtons button{
+min-width:160px;
+width:40vw;
+max-width: 220px;
+}
+
+#historieFooter button{
+padding:8px 16px;
+border-radius:8px;
+border:none;
+font-size:14px;
+cursor:pointer;
+}
+
+#zurueckZurApp{
+background:none;
+border:none;
+color:white;
+font-size:14px;
+cursor:pointer;
+
+padding:4px 0;
+}
+
+#jsonSpeichern{
+background:#0575d1;
+color:white;
+}
+
+#jsonLaden{
+background:#07810d;
+color:white;
+}
+
+.tagBearbeitenButton{
+margin-top:15px;
+}
+
+#aktuelleZeit{
+display:none;
+text-align:center;
+font-size:16px;
+margin:10px auto;
+padding:6px 12px;
+background:white;
+color:#222;
+border-radius:8px;
+}
+
+.arbeitstagTitel{
+position:relative;
+text-align:center;
+margin-bottom:10px;
+}
+
+.arbeitstagTitel h2{
+margin:0;
+}
+
+#toggleZeit{
+position:absolute;
+left: 10px;
+top:50%;
+transform:translateY(-50%);
+background:white;
+border:none;
+border-radius:6px;
+padding:4px 6px;
+font-size:14px;
+cursor:pointer;
+}
+
+#toggleZeit{
+background:white;
+border:none;
+border-radius:6px;
+padding:1px 2px;
+font-size:14px;
+cursor:pointer;
+}
+
+#homeNav{
+  position:absolute;
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+  background:none;
+  border:none;
+  padding:0;
+  cursor:pointer;
+}
+
+#homeNav img{
+  height:26px;
+  width:auto;
+  display:block;
+  border-radius:6px;
+}
+
+#vorschlaege{
+max-width:420px;
+background:white;
+}
+
+.vorschlag{
+padding:6px;
+cursor:pointer;
+}
+
+.vorschlag:hover{
+background:#f0f0f0;
+}
+
+.navButton{
+margin-top:8px;
+padding:8px 12px;
+border:none;
+border-radius:8px;
+background:#2e7d32;
+color:white;
+font-size:14px;
+cursor:pointer;
+}
+
+.navButtons button{
+  flex:1;                /* beide gleich breit */
+  padding:8px;           /* etwas flacher wie JSON-Buttons */
+  border:none;
+  border-radius:8px;
+  font-size:15px;
+  color:white;
+  text-align:center;
+  }
+
+.navButtons{
+  display:flex;
+  gap:12px;
+  margin-top:10px;
+  width:100%;
+}
+
+.navButtons button{
+  flex:1;
+}
+
+.einsatzFeld .navButtons{
+  width:100%;
+}
+
+.navApple{
+  background:#007aff;
+}
+
+.navGoogle{
+  background:#34a853;
+}
+
+</style>
+
 </head>
+
 <body>
 
-    <audio id="soundAction" src="IMG/light-on.mp3" preload="auto"></audio>
+<!-- Cover -->
 
-    <div id="coverScreen" onclick="lightUpAndStart()">
-        <img id="coverDark" src="IMG/cover01.png">
-        <img id="coverLight" src="IMG/cover02.png" style="opacity:0">
-        <div id="startText">TIPPEN ZUM STARTEN</div>
-    </div>
+<div id="cover" onclick="startApp()">
+<h1>MED</h1>
+<p>Mobiler Entstörungsdienst</p>
+<p>Tippen zum Starten</p>
+</div>
 
-    <div id="appContainer">
-        <div class="header">
-            <div class="header-left">ZIEL-DISTANZ<br><span id="wakeStatus" style="color:var(--accent); font-size:0.5rem">WAKE-LOCK AKTIV</span></div>
-            <div class="header-center">
-                <span id="nextDist">--</span><span class="unit-m">m</span>
-            </div>
-            <div class="header-next">
-                <div id="next-num">--</div>
-            </div>
-            <div class="header-right">
-                <div class="btn-close" onclick="location.reload()">✕</div>
-            </div>
-        </div>
 
-        <div class="controls">
-            <select id="tSel" onchange="updateSegments()"></select>
-            <select id="sSel" onchange="syncPreview()"></select>
-        </div>
+<!-- Hauptseite -->
 
-        <div id="map-wrapper">
-            <div id="map"></div>
-            <div id="btn-theme" class="map-btn" onclick="toggleTheme()">🌓</div>
-            <div id="btn-nav" class="map-btn" onclick="navToStart()">📍</div>
-        </div>
+<div id="mainPage">
 
-        <div class="bottom-bar">
-            <div class="prog-bg"><div id="progBar"></div></div>
-            <div class="footer-content">
-                <div onclick="document.getElementById('fileInput').click()" style="text-decoration: underline; cursor: pointer;">JSON LADEN</div>
-                <div id="speedText" style="font-size: 0.6rem; opacity: 0.5;">0 km/h</div>
-                <div id="progText">ABSCHNITT 0 / 0</div>
-                <input type="file" id="fileInput" style="display:none" onchange="loadFile(event)">
-            </div>
-        </div>
-    </div>
+<div id="zurueckAktuellerTag" style="display:none; margin-bottom:10px; cursor:pointer;">
+↩ Zum aktuellen Arbeitstag zurück
+</div>    
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<div id="historieHinweis" style="display:none;background:#ffeeba;color:#333;padding:10px;border-radius:8px;margin-bottom:10px;">
+Du schaust gerade einen gespeicherten Arbeitstag an.
+<button id="zurueckZumAktuellenTag">Zurück zum aktuellen Arbeitstag</button>
+</div>    
+
+<div class="arbeitstagTitel">
+<h2>Arbeitstag</h2>
+<button id="toggleZeit">🕒</button>
+<button id="homeNav">
+  <img src="IMG/home.png" alt="Home">
+</button>
+</div>
+
+<div id="aktuelleZeit"></div>
+
+<div class="grid2">
+
+<div class="feld">
+<label>Datum</label>
+<input type="date" id="datum">
+</div>
+
+<div class="feld">
+<label>Schicht</label>
+<select id="schicht">
+<option>Früh</option>
+<option>S-Früh</option>
+<option>Tag</option>
+<option>S-Spät</option>
+<option>Spät</option>
+<option>Nacht</option>
+<option>Andere</option>
+</select>
+</div>
+
+<div class="feld">
+<label>Wagen</label>
+
+<select id="wagen">
+<option value="">Fahrzeug wählen</option>
+<option>WG 408</option>
+<option>WG 351</option>
+<option>WG 508</option>
+<option>WG 509</option>
+<option>WG 215</option>
+<option>WG 216</option>
+</select>
+
+</div>
+
+<div class="feld">
+<label>Kollege</label>
+
+<input list="kollegenListe" id="kollege" placeholder="Kollege wählen">
+
+<datalist id="kollegenListe">
+<option value="Dogan">
+<option value="Grüneberg">
+<option value="Hähnel"> 
+<option value="Kleffmann">
+<option value="Kühn">
+<option value="Mauer">
+<option value="Merkel">
+<option value="Niggenaber">
+<option value="Oflas">
+<option value="Pawelczyk"> 
+<option value="Prieß">
+<option value="Saridogan">
+<option value="Schischke">
+<option value="Stoll">
+<option value="Tichelkamp">
+<option value="Vester">
+<option value="Vogel">
+<option value="Zöller">
+
+</datalist>
+
+<datalist id="einsatzartenListe">
+
+<option value="Gasgeruch">
+<option value="Gasgeruch im Haus">
+<option value="Gasgeruch im Keller">
+<option value="GZ macht Geräusche">
+<option value="Gasdruck überprüfen">
+<option value="Gasleitung beschädigt">
+<option value="Gasleuchte angefahren">
+<option value="Wasserrohrbruch">
+<option value="Wasser aus Erde">
+<option value="W.-HAE sperrt nicht"> 
+<option value="W.-Altg undicht"> 
+<option value="Strom Lampe angefahren">
+<option value="Verteilerschrank angefahren">
+<option value="Stromausfall">
+<option value="Netzstörung">
+<option value="Haus ohne Strom">
+<option value="Wohnung ohne Strom">
+<option value="Hausanschluss Störung">
+<option value="Kabel beschädigt">
+<option value="Zählerwechsel">
+<option value="Kontrolle">
+
+</datalist>
+
+</div>
+
+</div>
+
+
+<button id="neuerEinsatz">+ Einsatz hinzufügen</button>
+
+<div id="einsatzListe"></div>
+
+<button id="tagSpeichern">Arbeitstag speichern</button>
+
+<button id="historieButton">Historie anzeigen</button>
+
+</div>
+
+<div id="historiePage" style="display:none">
+
+<h2>Historie</h2>
+
+<div id="historieListe"></div>
+
+<div id="historieFooter">
+
+<button id="zurueckZurApp">Zurück</button>
+
+<div class="jsonButtons">
+<button id="jsonSpeichern">JSON sichern</button>
+<button id="jsonLaden">JSON laden</button>
+</div>
+
+</div>
+
+<input type="file" id="jsonDateiInput" accept=".json" style="display:none">
+
+</div>
+
 <script>
-    let projectData = null, map, routeLayer, userMarker, tileLayer;
-    let lastPos = null, lastRotation = 0, currentPoints = [], visitedPoints = new Set();
-    let wakeLock = null, isAutoLoading = false, isDarkMode = true;
 
-    function lightUpAndStart() {
-        const sound = document.getElementById('soundAction');
-        const sText = document.getElementById('startText');
-        const cDark = document.getElementById('coverDark');
-        const cLight = document.getElementById('coverLight');
-        const cScreen = document.getElementById('coverScreen');
-        const app = document.getElementById('appContainer');
+let strassen = [];
+let aktuelleStrasse = null;
 
-        if (sound) sound.play().catch(() => {});
-        
-        // Text sofort ausblenden
-        sText.style.opacity = '0';
-        // Licht an, Dunkelheit aus
-        cDark.style.opacity = '0';
-        cLight.style.opacity = '1';
+function normalize(text){
 
-        setTimeout(() => {
-            cScreen.style.opacity = '0';
-            app.style.display = 'flex';
-            setTimeout(() => {
-                app.style.opacity = '1';
-                cScreen.style.display = 'none';
-                initMap(); initAppData(); requestWakeLock();
-            }, 800);
-        }, 2200); 
+return text
+.toLowerCase()
+.replace(/ä/g,"ae")
+.replace(/ö/g,"oe")
+.replace(/ü/g,"ue")
+.replace(/ß/g,"ss");
+
+}
+
+const LOESCH_PIN = "2410";
+
+
+function searchStreet(query){
+
+    console.log("NEUE SUCHE AKTIV:", query);
+
+const words = normalize(query).split(" ");
+
+let results = [];
+
+for(let s of strassen){
+
+const name = normalize(s.name);
+
+/* alle Wörter müssen enthalten sein */
+let match = words.every(w => name.includes(w));
+
+if(match){
+results.push(s);
+}
+
+}
+
+return results.slice(0,10);
+
+}
+
+
+
+fetch("duesseldorf_strassen.json")
+.then(r => r.json())
+.then(data => {
+
+strassen = data;
+
+console.log("Straßen geladen:", strassen.length);
+
+});   
+
+function startApp(){
+document.getElementById("cover").style.display="none";
+document.getElementById("mainPage").style.display="block";
+}
+
+
+/* Datum automatisch setzen */
+
+window.onload = function() {
+
+    // 1. Datum auf heute setzen
+    let heute = new Date().toISOString().split("T")[0];
+    let datumInput = document.getElementById("datum");
+    
+    // Wir merken uns das Datum beim Laden, um Änderungen zu prüfen
+    if (!datumInput.value) {
+        datumInput.value = heute;
     }
 
-    function initMap() {
-        if(map) return;
-        map = L.map('map', { zoomControl: false, attributionControl: false }).setView([51.2, 6.7], 18);
-        tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
-        routeLayer = L.layerGroup().addTo(map);
-        const userIcon = L.divIcon({ className: 'user-location-icon', iconSize: [22, 22], iconAnchor: [11, 11] });
-        userMarker = L.marker([0,0], { icon: userIcon, zIndexOffset: 1000 }).addTo(map);
-        if (navigator.geolocation) navigator.geolocation.watchPosition(updatePos, null, { enableHighAccuracy: true });
+    // --- DIE SICHERHEITSABFRAGE BEIM DATUM-WECHSEL ---
+    datumInput.addEventListener("change", function() {
+        let gewaehltesDatum = this.value;
+        let aktuellHeute = new Date().toISOString().split("T")[0];
+
+        // Check: Liegt das Datum in der Vergangenheit?
+        if (gewaehltesDatum < aktuellHeute) {
+            if (!confirm("⚠ Achtung:\n\nDas gewählte Datum liegt in der Vergangenheit.\n\nMöchtest du wirklich einen Arbeitstag für dieses Datum beginnen?")) {
+                this.value = aktuellHeute;
+                return;
+            }
+        }
+
+        // Check: Neuen Tag leeren?
+        if (confirm("Neuen Arbeitstag beginnen? Alle aktuellen Einsätze auf dem Bildschirm werden gelöscht.")) {
+            document.getElementById("einsatzListe").innerHTML = "";
+            einsatzNummer = 0;
+            // Wir leeren auch den Speicher für den "aktuellen Tag", damit nichts Altes lädt
+            localStorage.removeItem("MED_AktuellerTag");
+            alert("Felder wurden geleert. Du kannst jetzt neu starten.");
+        }
+    });
+
+    // 2. Vorhandene Daten laden (Wagen, Kollege, Schicht)
+    let letzterWagen = localStorage.getItem("wagen");
+    if (letzterWagen) document.getElementById("wagen").value = letzterWagen;
+
+    let letzterKollege = localStorage.getItem("kollege");
+    if (letzterKollege) document.getElementById("kollege").value = letzterKollege;
+
+    let letzteSchicht = localStorage.getItem("schicht");
+    if (letzteSchicht) document.getElementById("schicht").value = letzteSchicht;
+
+    // 3. Den gespeicherten Arbeitstag wiederherstellen
+    let gespeicherterTag = localStorage.getItem("MED_AktuellerTag");
+
+    if (gespeicherterTag) {
+        let arbeitstag = JSON.parse(gespeicherterTag);
+
+        // Nur laden, wenn das Datum im Speicher zum Feld passt
+        datumInput.value = arbeitstag.datum;
+        document.getElementById("schicht").value = arbeitstag.schicht;
+        document.getElementById("wagen").value = arbeitstag.wagen;
+        document.getElementById("kollege").value = arbeitstag.kollege;
+
+        // Einsätze aufbauen
+        arbeitstag.einsaetze.forEach(function(e, index) {
+            let button = document.getElementById("neuerEinsatz");
+            if (button) button.click();
+
+            let alleEinsaetze = document.querySelectorAll(".einsatz");
+            let einsatz = alleEinsaetze[alleEinsaetze.length - 1];
+            let inputs = einsatz.querySelectorAll("input, textarea");
+
+            // Felder füllen
+            if(inputs[0]) inputs[0].value = e.einsatzart || "";
+            if(inputs[1]) inputs[1].value = e.adresse || "";
+            if(inputs[2]) inputs[2].value = e.melder || "";
+            if(inputs[3]) inputs[3].value = e.meldung || "";
+            if(inputs[4]) inputs[4].value = e.eintreffen || "";
+            if(inputs[5]) inputs[5].value = e.abfahrt || "";
+            if(inputs[6]) inputs[6].value = e.feststellung || "";
+            if(inputs[7]) inputs[7].value = e.massnahmen || "";
+            if(inputs[8]) inputs[8].value = e.bemerkung || "";
+
+            // Straßen-Titel nach 50ms wiederherstellen
+            if (e.headerTitel) {
+                setTimeout(function() {
+                    let titelElement = einsatz.querySelector(".einsatzTitel");
+                    if (titelElement) {
+                        titelElement.innerHTML = e.headerTitel;
+                    }
+                }, 50);
+            }
+        });
+
+        // Alle einklappen, außer den letzten
+        let alleEinsaetze = document.querySelectorAll(".einsatz");
+        alleEinsaetze.forEach(function(e) {
+            e.querySelector(".einsatzInhalt").style.display = "none";
+            e.querySelector(".toggleSymbol").textContent = "▶";
+        });
+
+        if (alleEinsaetze.length > 0) {
+            let letzter = alleEinsaetze[alleEinsaetze.length - 1];
+            let inhalt = letzter.querySelector(".einsatzInhalt");
+            let symbol = letzter.querySelector(".toggleSymbol");
+            inhalt.style.display = "block";
+            symbol.textContent = "▼";
+        }
+    }
+};
+
+
+document.getElementById("wagen").addEventListener("change", function(){
+localStorage.setItem("wagen", this.value);
+});
+
+
+document.getElementById("kollege").addEventListener("change", function(){
+localStorage.setItem("kollege", this.value);
+});
+
+
+document.getElementById("schicht").addEventListener("change", function(){
+localStorage.setItem("schicht", this.value);
+});
+
+let aktuellerTag = null;
+
+let einsatzNummer = 0;
+
+document.getElementById("neuerEinsatz").addEventListener("click", function(){
+
+einsatzNummer++;
+
+let container = document.createElement("div");
+container.className = "einsatz";
+
+container.innerHTML = `
+<div class="einsatzHeader">
+<h3 class="einsatzTitel">Einsatz ${einsatzNummer}</h3>
+<div>
+<span class="toggleSymbol">▼</span>
+
+<button class="lockBtn" style="margin-left:10px;cursor:pointer;">🔓</button>
+
+<span class="loeschenSymbol" style="margin-left:10px;cursor:pointer;color:red;">✖</span>
+</div>
+</div>
+
+<div class="einsatzInhalt">
+
+<div class="einsatzFeld">
+<label>Einsatzart</label>
+<input list="einsatzartenListe" placeholder="Einsatzart wählen oder tippen">
+</div>
+
+<div class="einsatzFeld">
+<label>Adresse</label>
+<textarea class="adresseFeld" id="strasseInput" placeholder="Straße / Hausnummer" autocomplete="off"></textarea>
+<div id="vorschlaege"></div>
+<div class="navButtons">
+  <button class="navApple">Apple Karten</button>
+  <button class="navGoogle">Google Maps</button>
+</div>
+</div>
+
+<div class="einsatzFeld">
+<label>Melder</label>
+<input type="text" placeholder="Name oder Firma">
+</div>
+
+<div class="zeitGrid">
+
+<div class="einsatzFeld">
+<label>Meldung</label>
+<input type="time">
+</div>
+
+<div class="einsatzFeld">
+<label>Eintreffen</label>
+<input type="time">
+</div>
+
+<div class="einsatzFeld">
+<label>Abfahrt</label>
+<input type="time">
+</div>
+
+</div>
+
+<div class="einsatzFeldGross">
+<label>Feststellung</label>
+<textarea rows="3" placeholder="Situation vor Ort"></textarea>
+</div>
+
+<div class="einsatzFeldGross">
+<label>Maßnahmen</label>
+<textarea rows="3" placeholder="Was wurde unternommen"></textarea>
+</div>
+
+<div class="einsatzFeldGross">
+<label>Bemerkung</label>
+<textarea rows="2" placeholder="Weitere Hinweise"></textarea>
+</div>
+</div>
+`;
+
+let gesperrt = false;
+
+const lockBtn = container.querySelector(".lockBtn");
+const felder = container.querySelectorAll("input, textarea");
+
+lockBtn.addEventListener("click", function(e){
+
+  e.stopPropagation(); // ⬅️ DAS ist der entscheidende Fix
+
+  gesperrt = !gesperrt;
+
+  felder.forEach(f => {
+    f.disabled = gesperrt;
+  });
+
+lockBtn.textContent = gesperrt ? "🔒" : "✏️";
+
+});
+
+container.querySelector(".einsatzHeader").addEventListener("click", function(){
+
+let inhalt = container.querySelector(".einsatzInhalt");
+let symbol = container.querySelector(".toggleSymbol");
+
+let istOffen = inhalt.style.display === "block";
+
+let alle = document.querySelectorAll(".einsatz");
+
+alle.forEach(function(e){
+
+let i = e.querySelector(".einsatzInhalt");
+let s = e.querySelector(".toggleSymbol");
+
+i.style.display = "none";
+s.textContent = "▶";
+
+});
+
+if(!istOffen){
+inhalt.style.display = "block";
+symbol.textContent = "▼";
+}
+
+});
+
+
+
+let adresseInput = container.querySelector(".adresseFeld");
+let titel = container.querySelector(".einsatzTitel");
+
+adresseInput.addEventListener("input", function(){
+
+if(this.value.trim() !== ""){
+
+  let einsatz = this.closest(".einsatz");
+
+  if(einsatz.dataset.adresseTitel){
+    titel.innerHTML =
+      "Einsatz " + einsatzNummer +
+      "<br><span class='einsatzAdresse'>" +
+      einsatz.dataset.adresseTitel +
+      "</span>";
+  }else{
+    titel.textContent = "Einsatz " + einsatzNummer;
+  }
+
+}else{
+  titel.textContent = "Einsatz " + einsatzNummer;
+}
+
+});
+
+let loeschenButton = container.querySelector(".loeschenSymbol");
+
+loeschenButton.addEventListener("click", function(){
+
+  if(confirm("Diesen Einsatz wirklich löschen?")){
+
+    let pin = prompt("Bitte PIN eingeben:");
+
+    if(pin === LOESCH_PIN){
+
+      container.remove();
+      aktualisiereEinsatzNummern();
+      autoSpeichern();
+
+    } else {
+
+      alert("Falscher PIN oder Vorgang abgebrochen");
+
     }
 
-    function updatePos(pos) {
-        const lat = pos.coords.latitude, lng = pos.coords.longitude;
-        const cur = L.latLng(lat, lng), speed = Math.round((pos.coords.speed || 0) * 3.6);
+  }
+
+});
+
+
+
+
+document.getElementById("einsatzListe").appendChild(container);
+autoSpeichern();
+
+});
+
+document.getElementById("tagSpeichern").addEventListener("click", function(){
+
+    let arbeitstag = {};
+    arbeitstag.datum = document.getElementById("datum").value;
+    arbeitstag.schicht = document.getElementById("schicht").value;
+    arbeitstag.wagen = document.getElementById("wagen").value;
+    arbeitstag.kollege = document.getElementById("kollege").value;
+    arbeitstag.einsaetze = [];
+
+    let einsaetze = document.querySelectorAll(".einsatz");
+
+    einsaetze.forEach(function(einsatz){
+        let daten = {};
+        let inputs = einsatz.querySelectorAll("input, textarea");
+
+        // WICHTIG: Den Titel mit der Straße für die History sichern
+        let titelElement = einsatz.querySelector(".einsatzTitel");
+        daten.headerTitel = titelElement ? titelElement.innerHTML : ""; 
+
+        daten.einsatzart = inputs[0].value;
+        daten.adresse = inputs[1].value;
+        daten.melder = inputs[2].value;
+        daten.meldung = inputs[3].value;
+        daten.eintreffen = inputs[4].value;
+        daten.abfahrt = inputs[5].value;
+        daten.feststellung = inputs[6].value;
+        daten.massnahmen = inputs[7].value;
+        daten.bemerkung = inputs[8].value;
+
+        arbeitstag.einsaetze.push(daten);
+    });
+
+    let archiv = JSON.parse(localStorage.getItem("MED_Archiv")) || [];
+    let index = archiv.findIndex(tag => tag.datum === arbeitstag.datum);
+
+    if(index !== -1){
+        // DATUM EXISTIERT SCHON -> INTELLIGENT ZUSAMMENFÜHREN
+        let existierenderTag = archiv[index];
         
-        if (lastPos) {
-            userMarker.setLatLng(cur);
-            map.panTo(cur, { animate: true, duration: 1.0 });
-            if (speed > 4) {
-                const newRotation = Math.atan2(lng - lastPos.lng, lat - lastPos.lat) * (180 / Math.PI);
-                if (Math.abs(newRotation - lastRotation) > 3) {
-                    document.getElementById('map').style.transform = `rotate(${-newRotation}deg)`;
-                    lastRotation = newRotation;
+        arbeitstag.einsaetze.forEach(neuerEinsatz => {
+            // Wir prüfen, ob dieser Einsatz (Zeit + Adresse) schon im Archiv ist
+            let istSchonDrin = existierenderTag.einsaetze.some(alt => 
+                alt.adresse === neuerEinsatz.adresse && 
+                alt.meldung === neuerEinsatz.meldung
+            );
+
+            if(!istSchonDrin) {
+                existierenderTag.einsaetze.push(neuerEinsatz);
+            }
+        });
+        
+        // Stammdaten aktualisieren
+        existierenderTag.wagen = arbeitstag.wagen;
+        existierenderTag.kollege = arbeitstag.kollege;
+        existierenderTag.schicht = arbeitstag.schicht;
+        
+        // WICHTIG: Die Einsätze neu sortieren (falls gewünscht, sonst einfach hinten dran)
+        // existierenderTag.einsaetze.sort((a, b) => a.meldung.localeCompare(b.meldung));
+
+    } else {
+        // NEUES DATUM -> NEUER EINTRAG
+        archiv.push(arbeitstag);
+    }
+
+    localStorage.setItem("MED_Archiv", JSON.stringify(archiv));
+    alert("Arbeitstag erfolgreich im Archiv gespeichert/aktualisiert.");
+
+});
+
+
+function aktualisiereEinsatzNummern(){
+    let alleEinsaetze = document.querySelectorAll(".einsatz");
+
+    alleEinsaetze.forEach(function(einsatz, index){
+        let titel = einsatz.querySelector(".einsatzTitel");
+        let neueNummer = index + 1;
+
+        // Wir prüfen, ob im HTML des Titels ein Zeilenumbruch oder ein Span ist (unser Straßen-Format)
+        if(titel.innerHTML.includes("<br>") || titel.innerHTML.includes("span")) {
+            
+            // Wir teilen den Text am Zeilenumbruch
+            // Teil 0 ist "Einsatz X", Teil 1 ist die "Straße"
+            let teile = titel.innerHTML.split("<br>");
+            let straßenTeil = teile[1] || ""; 
+
+            // Wir setzen den Titel neu zusammen: Neue Nummer + alte Straße
+            titel.innerHTML = "Einsatz " + neueNummer + "<br>" + straßenTeil;
+            
+        } else {
+            // Falls keine Straße drin steht, einfach nur die Nummer aktualisieren
+            titel.textContent = "Einsatz " + neueNummer;
+        }
+    });
+
+    // Die globale Zählvariable für den nächsten neuen Einsatz anpassen
+    einsatzNummer = alleEinsaetze.length;
+}
+
+
+
+function autoSpeichern(){
+
+    console.log("AUTOSAVE läuft");    
+
+    let arbeitstag = {};
+
+    arbeitstag.datum = document.getElementById("datum").value;
+    arbeitstag.schicht = document.getElementById("schicht").value;
+    arbeitstag.wagen = document.getElementById("wagen").value;
+    arbeitstag.kollege = document.getElementById("kollege").value;
+
+    arbeitstag.einsaetze = [];
+
+    let einsaetze = document.querySelectorAll(".einsatz");
+
+    einsaetze.forEach(function(einsatz){
+
+        let daten = {};
+        let inputs = einsatz.querySelectorAll("input, textarea");
+
+        // Speichert den kompletten Inhalt des blauen Balkens (inkl. Straße)
+        let titelElement = einsatz.querySelector(".einsatzTitel");
+        daten.headerTitel = titelElement ? titelElement.innerHTML : ""; 
+
+        daten.einsatzart = inputs[0].value;
+        daten.adresse = inputs[1].value;
+        daten.melder = inputs[2].value;
+        daten.meldung = inputs[3].value;
+        daten.eintreffen = inputs[4].value;
+        daten.abfahrt = inputs[5].value;
+        daten.feststellung = inputs[6].value;
+        daten.massnahmen = inputs[7].value;
+        daten.bemerkung = inputs[8].value;
+
+        arbeitstag.einsaetze.push(daten);
+
+    });
+
+    localStorage.setItem("MED_AktuellerTag", JSON.stringify(arbeitstag));
+
+}
+
+
+function downloadJSON(daten){
+
+let json = JSON.stringify(daten, null, 2);
+
+let blob = new Blob([json], {type: "application/json"});
+
+let url = URL.createObjectURL(blob);
+
+let link = document.createElement("a");
+
+let datum = new Date().toISOString().split("T")[0];
+
+link.href = url;
+link.download = "MED_" + datum + ".json";
+
+link.click();
+
+URL.revokeObjectURL(url);
+
+}
+
+document.getElementById("historieButton").addEventListener("click", function(){
+
+aktuellerTag = speichereAktuellenTag();   
+
+document.getElementById("mainPage").style.display = "none";
+document.getElementById("historiePage").style.display = "flex";
+
+ladeHistorie();
+
+});
+
+document.getElementById("zurueckAktuellerTag").addEventListener("click", function(){
+
+if(aktuellerTag){
+editorLadeArbeitstag(aktuellerTag);
+}
+
+document.getElementById("zurueckAktuellerTag").style.display = "none";
+
+});
+
+document.getElementById("zurueckZurApp").addEventListener("click", function(){
+
+document.getElementById("historiePage").style.display = "none";
+document.getElementById("mainPage").style.display = "block";
+
+});
+
+document.getElementById("jsonSpeichern").addEventListener("click", function(){
+
+if(confirm("Backup der MED-Daten als JSON speichern?")){
+
+exportJSON();
+
+}
+
+});
+
+document.getElementById("jsonLaden").addEventListener("click", function(){
+
+if(confirm("JSON-Backup laden? Aktuelle Daten können überschrieben werden.")){
+
+document.getElementById("jsonDateiInput").click();
+
+}
+
+});
+
+document.getElementById("zurueckZumAktuellenTag").addEventListener("click", function(){
+
+document.getElementById("historieHinweis").style.display = "none";
+
+if(aktuellerTag){
+ladeArbeitstag(aktuellerTag);
+}
+
+});
+
+
+function ladeHistorie(){
+
+let archiv = JSON.parse(localStorage.getItem("MED_Archiv")) || [];
+
+archiv.sort((a,b)=> new Date(b.datum) - new Date(a.datum));
+
+let liste = document.getElementById("historieListe");
+
+liste.innerHTML = "";
+
+archiv.forEach(function(tag, indexTag){
+
+let div = document.createElement("div");
+
+div.className = "historieEintrag";
+
+let d = tag.datum.split("-");
+let datumAnzeige = d[2] + "." + d[1] + "." + d[0];
+
+div.innerHTML = `
+<div class="historieHeader">
+
+<span class="historiePfeil">▶</span>
+<span class="historieDatum">${datumAnzeige}</span>
+<span class="historieSchicht">${tag.schicht}</span>
+<span class="historieWagen">${tag.wagen}</span>
+<span class="historieName">${tag.kollege}</span>
+
+</div>
+
+<div class="historieInhalt" style="display:none"></div>
+`;
+
+
+
+let header = div.querySelector(".historieHeader");
+let inhalt = div.querySelector(".historieInhalt");
+let pfeil = div.querySelector(".historiePfeil");
+
+header.addEventListener("click", function(){
+
+if(inhalt.style.display === "none"){
+
+inhalt.style.display = "block";
+pfeil.textContent = "▼";
+
+inhalt.innerHTML = "";
+
+tag.einsaetze.forEach(function(e, index){
+
+let eintrag = document.createElement("div");
+
+eintrag.className = "historieEinsatz";
+
+eintrag.innerHTML = `
+<div class="historieEinsatzHeader">
+<span class="historieLoeschenEinsatz">✖</span>
+<span class="historiePfeil">▶</span>
+<b>Einsatz ${index + 1}</b> – ${e.einsatzart}<br>
+${e.adresse}
+</div>
+
+<div class="historieEinsatzInhalt" style="display:none">
+
+<b>Melder:</b> ${e.melder}<br>
+<b>Meldung:</b> ${e.meldung}<br>
+<b>Eintreffen:</b> ${e.eintreffen}<br>
+<b>Abfahrt:</b> ${e.abfahrt}<br><br>
+
+<b>Feststellung:</b><br>
+${e.feststellung}<br><br>
+
+<b>Maßnahmen:</b><br>
+${e.massnahmen}<br><br>
+
+<b>Bemerkung:</b><br>
+${e.bemerkung}
+
+</div>
+`;
+
+let h = eintrag.querySelector(".historieEinsatzHeader");
+let c = eintrag.querySelector(".historieEinsatzInhalt");
+let p = eintrag.querySelector(".historiePfeil");
+let loesch = eintrag.querySelector(".historieLoeschenEinsatz");
+
+h.addEventListener("click", function(){
+
+if(c.style.display === "none"){
+c.style.display = "block";
+p.textContent = "▼";
+}else{
+c.style.display = "none";
+p.textContent = "▶";
+}
+
+});
+
+loesch.addEventListener("click", function(event){
+
+event.stopPropagation();
+
+if(confirm("Diesen Einsatz wirklich löschen?")){
+
+let archiv = JSON.parse(localStorage.getItem("MED_Archiv")) || [];
+archiv.sort((a,b)=> new Date(b.datum) - new Date(a.datum));
+archiv[indexTag].einsaetze.splice(index,1);
+
+localStorage.setItem("MED_Archiv", JSON.stringify(archiv));
+
+ladeHistorie();
+
+}
+
+});
+
+inhalt.appendChild(eintrag);
+
+});
+
+let bearbeitenButton = document.createElement("div");
+
+bearbeitenButton.className = "tagBearbeitenButton";
+
+bearbeitenButton.textContent = "✏️ Arbeitstag bearbeiten";
+
+inhalt.appendChild(bearbeitenButton);
+
+bearbeitenButton.addEventListener("click", function(){
+
+autoSpeichern();
+
+editorLadeArbeitstag(tag);
+
+});
+
+let loeschButton = document.createElement("div");
+
+loeschButton.className = "tagLoeschenButton";
+
+loeschButton.textContent = "🗑 Arbeitstag löschen";
+
+inhalt.appendChild(loeschButton);
+
+loeschButton.addEventListener("click", function(){
+    if(confirm("Diesen Arbeitstag wirklich löschen?")){
+        let pin = prompt("Bitte PIN eingeben:");
+        if(pin !== "0000") return; // Dein PIN
+
+        // 1. Das Archiv frisch laden
+        let archiv = JSON.parse(localStorage.getItem("MED_Archiv")) || [];
+
+        // 2. Den "echten" Platz im Speicher finden, indem wir das Datum vergleichen
+        // Wir suchen im Archiv nach dem Eintrag, dessen Datum exakt dem 'tag.datum' entspricht
+        let echterIndex = archiv.findIndex(a => a.datum === tag.datum);
+
+        if (echterIndex !== -1) {
+            // 3. Nur wenn wir ihn gefunden haben, löschen wir genau diesen Index
+            archiv.splice(echterIndex, 1);
+            localStorage.setItem("MED_Archiv", JSON.stringify(archiv));
+            
+            // 4. Liste neu zeichnen
+            ladeHistorie();
+            alert("Arbeitstag wurde gelöscht.");
+        } else {
+            alert("Fehler: Der Tag konnte im Archiv nicht eindeutig gefunden werden.");
+        }
+    }
+});
+
+
+}else{
+
+inhalt.style.display = "none";
+pfeil.textContent = "▶";
+
+}
+
+});
+
+
+liste.appendChild(div);
+
+});
+
+}
+
+function editorLadeArbeitstag(tag){
+
+    document.getElementById("zurueckAktuellerTag").style.display = "block";
+    document.getElementById("historiePage").style.display = "none";
+    document.getElementById("mainPage").style.display = "block";
+
+    document.getElementById("datum").value = tag.datum;
+    document.getElementById("schicht").value = tag.schicht;
+    document.getElementById("wagen").value = tag.wagen;
+    document.getElementById("kollege").value = tag.kollege;
+
+    document.getElementById("einsatzListe").innerHTML = "";
+    einsatzNummer = 0;
+
+    tag.einsaetze.forEach(function(e){
+
+        let button = document.getElementById("neuerEinsatz");
+        button.click();
+
+        let letzter = document.querySelectorAll(".einsatz");
+        let einsatz = letzter[letzter.length - 1];
+
+        let inputs = einsatz.querySelectorAll("input, textarea");
+
+        inputs[0].value = e.einsatzart;
+        inputs[1].value = e.adresse;
+        inputs[2].value = e.melder;
+        inputs[3].value = e.meldung;
+        inputs[4].value = e.eintreffen;
+        inputs[5].value = e.abfahrt;
+        inputs[6].value = e.feststellung;
+        inputs[7].value = e.massnahmen;
+        inputs[8].value = e.bemerkung;
+
+        // --- NEU: Den Titel mit Straße wiederherstellen ---
+        if (e.headerTitel) {
+            setTimeout(function() {
+                let titelElement = einsatz.querySelector(".einsatzTitel");
+                if (titelElement) {
+                    titelElement.innerHTML = e.headerTitel;
                 }
-            }
-        } else {
-            userMarker.setLatLng(cur); map.setView(cur, 18);
+            }, 50); // Kleiner Zeitpuffer, damit der Balken bereit ist
         }
-        lastPos = {lat, lng};
-        document.getElementById('speedText').innerText = speed + " km/h";
-        
-        currentPoints.forEach((p, i) => {
-            if (cur.distanceTo(L.latLng(p.lat, p.lng)) < 18 && !visitedPoints.has(i)) {
-                visitedPoints.add(i);
-                refreshMarkers();
-                checkAutoNext(i);
-            }
-        });
-        updateUI(cur);
-    }
+    });
+}
 
-    function updateUI(cur) {
-        if (currentPoints.length === 0) return;
-        let nextIdx = -1;
-        for(let i=0; i < currentPoints.length; i++) { if(!visitedPoints.has(i)) { nextIdx = i; break; } }
-        if (nextIdx !== -1) {
-            const d = cur.distanceTo(L.latLng(currentPoints[nextIdx].lat, currentPoints[nextIdx].lng));
-            document.getElementById('nextDist').innerText = Math.round(d);
-            document.getElementById('next-num').innerText = nextIdx + 1;
-        } else {
-            document.getElementById('next-num').innerText = "✓";
-        }
-    }
 
-    function checkAutoNext(index) {
-        if (index === currentPoints.length - 1 && !isAutoLoading) {
-            isAutoLoading = true;
-            const sSel = document.getElementById('sSel');
-            if (sSel.selectedIndex < sSel.options.length - 1) {
-                setTimeout(() => {
-                    sSel.selectedIndex += 1;
-                    updateSegments();
-                    isAutoLoading = false;
-                }, 3000);
-            }
-        }
-    }
+function ladeArbeitstag(tag){
 
-    function refreshMarkers() {
-        routeLayer.clearLayers();
-        currentPoints.forEach((p, i) => {
-            const isDone = visitedPoints.has(i);
-            L.marker([p.lat, p.lng], { icon: L.divIcon({ className: `number-icon ${isDone ? 'done' : ''}`, html: i + 1, iconSize: [26, 26] }) }).addTo(routeLayer);
-        });
-        syncRouteLine();
-    }
+document.getElementById("historiePage").style.display = "none";
+document.getElementById("mainPage").style.display = "block";
 
-    async function syncRouteLine() {
-        const coords = currentPoints.map(p => `${p.lng},${p.lat}`).join(';');
-        try {
-            const r = await fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`);
-            const d = await r.json();
-            L.polyline(d.routes[0].geometry.coordinates.map(c => [c[1], c[0]]), {color: '#3b82f6', weight: 8, opacity: 0.5}).addTo(routeLayer);
-        } catch(e) {}
-    }
+document.getElementById("historieHinweis").style.display = "block";
 
-    function toggleTheme() {
-        isDarkMode = !isDarkMode;
-        tileLayer.setUrl(isDarkMode ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-    }
+document.getElementById("datum").value = tag.datum;
+document.getElementById("schicht").value = tag.schicht;
+document.getElementById("wagen").value = tag.wagen;
+document.getElementById("kollege").value = tag.kollege;
 
-    function navToStart() {
-        if(!currentPoints.length) return;
-        window.open(`comgooglemaps://?daddr=${currentPoints[0].lat},${currentPoints[0].lng}&directionsmode=driving`, '_blank');
-    }
+document.getElementById("einsatzListe").innerHTML = "";
 
-    function loadFile(event) {
-        const reader = new FileReader();
-        reader.onload = (e) => { projectData = JSON.parse(e.target.result); localStorage.setItem('active_route_data', e.target.result); fillTours(); };
-        reader.readAsText(event.target.files[0]);
-    }
+einsatzNummer = 0;
 
-    function initAppData() {
-        const saved = localStorage.getItem('active_route_data');
-        if (saved) { projectData = JSON.parse(saved); fillTours(); }
-    }
+tag.einsaetze.forEach(function(e){
 
-    function fillTours() {
-        const tSel = document.getElementById('tSel');
-        tSel.innerHTML = projectData.touren.map((t, i) => `<option value="${i}">${t.id} - ${t.name}</option>`).join('');
-        updateSegments();
-    }
+einsatzNummer++;
 
-    function updateSegments() {
-        const tIdx = document.getElementById('tSel').value;
-        const sSel = document.getElementById('sSel');
-        if (sSel.options.length === 0 || isAutoLoading) {
-             sSel.innerHTML = projectData.touren[tIdx].abschnitte.map((s, i) => `<option value="${i}">${s.bezeichnung}</option>`).join('');
-        }
-        syncPreview();
-    }
+let container = document.createElement("div");
 
-    function syncPreview() {
-        const tIdx = document.getElementById('tSel').value, sIdx = document.getElementById('sSel').value;
-        const section = projectData.touren[tIdx].abschnitte[sIdx];
-        currentPoints = section.stopps; visitedPoints.clear(); refreshMarkers();
-        document.getElementById('progText').innerText = `ABSCHNITT ${parseInt(sIdx)+1} / ${projectData.touren[tIdx].abschnitte.length}`;
-        document.getElementById('progBar').style.width = Math.round(((parseInt(sIdx)+1)/projectData.touren[tIdx].abschnitte.length)*100) + "%";
-    }
+container.className = "einsatz";
 
-    async function requestWakeLock() {
-        try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
-    }
+/* hier benutzen wir den gleichen Aufbau wie beim normalen Einsatz */
+
+container.innerHTML = `
+<div class="einsatzHeader">
+<h3 class="einsatzTitel">Einsatz ${einsatzNummer}</h3>
+<span class="toggleSymbol">▼</span>
+</div>
+
+<div class="einsatzInhalt">
+
+<div class="einsatzFeld">
+<label>Einsatzart</label>
+<input type="text" value="${e.einsatzart}">
+</div>
+
+<div class="einsatzFeld">
+<label>Adresse</label>
+<input type="text" class="adresseFeld" id="strasseInput" value="${e.adresse}">
+<div id="vorschlaege"></div>
+</div>
+
+<div class="einsatzFeld">
+<label>Melder</label>
+<input type="text" value="${e.melder}">
+</div>
+
+<div class="zeitGrid">
+
+<div class="einsatzFeld">
+<label>Meldung</label>
+<input type="time" value="${e.meldung}">
+</div>
+
+<div class="einsatzFeld">
+<label>Eintreffen</label>
+<input type="time" value="${e.eintreffen}">
+</div>
+
+<div class="einsatzFeld">
+<label>Abfahrt</label>
+<input type="time" value="${e.abfahrt}">
+</div>
+
+</div>
+
+<div class="einsatzFeldGross">
+<label>Feststellung</label>
+<textarea rows="3">${e.feststellung}</textarea>
+</div>
+
+<div class="einsatzFeldGross">
+<label>Maßnahmen</label>
+<textarea rows="3">${e.massnahmen}</textarea>
+</div>
+
+<div class="einsatzFeldGross">
+<label>Bemerkung</label>
+<textarea rows="2">${e.bemerkung}</textarea>
+</div>
+
+</div>
+`;
+
+document.getElementById("einsatzListe").appendChild(container);
+
+});
+
+}
+
+
+function speichereAktuellenTag(){
+
+let arbeitstag = {};
+
+arbeitstag.datum = document.getElementById("datum").value;
+arbeitstag.schicht = document.getElementById("schicht").value;
+arbeitstag.wagen = document.getElementById("wagen").value;
+arbeitstag.kollege = document.getElementById("kollege").value;
+
+arbeitstag.einsaetze = [];
+
+let einsaetze = document.querySelectorAll(".einsatz");
+
+einsaetze.forEach(function(einsatz){
+
+let daten = {};
+
+let inputs = einsatz.querySelectorAll("input, textarea");
+
+daten.einsatzart = inputs[0].value;
+daten.adresse = inputs[1].value;
+daten.melder = inputs[2].value;
+daten.meldung = inputs[3].value;
+daten.eintreffen = inputs[4].value;
+daten.abfahrt = inputs[5].value;
+daten.feststellung = inputs[6].value;
+daten.massnahmen = inputs[7].value;
+daten.bemerkung = inputs[8].value;
+
+arbeitstag.einsaetze.push(daten);
+
+});
+
+return arbeitstag;
+
+}
+
+function autoResizeTextarea(textarea){
+textarea.style.height = "auto";
+textarea.style.height = (textarea.scrollHeight - 20) + "px";
+}
+
+document.addEventListener("input", function(e){
+
+if(e.target.tagName === "TEXTAREA"){
+autoResizeTextarea(e.target);
+}
+
+});
+
+function exportJSON(){
+
+let archiv = JSON.parse(localStorage.getItem("MED_Archiv")) || [];
+archiv.sort((a,b)=> new Date(b.datum) - new Date(a.datum));
+
+if(archiv.length === 0){
+alert("Keine Daten zum Speichern vorhanden.");
+return;
+}
+
+let jsonString = JSON.stringify(archiv, null, 2);
+
+let blob = new Blob([jsonString], {type:"application/json"});
+
+let url = URL.createObjectURL(blob);
+
+let a = document.createElement("a");
+
+let datum = new Date().toISOString().split("T")[0];
+
+a.href = url;
+a.download = "MED_Backup_" + datum + ".json";
+
+a.click();
+
+URL.revokeObjectURL(url);
+
+}
+
+function aktualisiereZeit(){
+
+let jetzt = new Date();
+
+let datum = jetzt.toLocaleDateString("de-DE",{
+weekday:"long",
+day:"2-digit",
+month:"2-digit",
+year:"numeric"
+});
+
+let uhrzeit = jetzt.toLocaleTimeString("de-DE");
+
+document.getElementById("aktuelleZeit").textContent =
+datum + " – " + uhrzeit;
+
+}
+
+function resizeAlleTextareas(){
+
+document.querySelectorAll("textarea").forEach(function(t){
+
+autoResizeTextarea(t);
+
+});
+
+}
+
+setInterval(aktualisiereZeit,1000);
+aktualisiereZeit();
+
+let zeitSichtbar = false;
+
+document.getElementById("toggleZeit").addEventListener("click", function(){
+
+let feld = document.getElementById("aktuelleZeit");
+
+zeitSichtbar = !zeitSichtbar;
+
+if(zeitSichtbar){
+feld.style.display = "inline-block";
+}else{
+feld.style.display = "none";
+}
+
+});
+
+
+setInterval(function(){
+
+autoSpeichern();
+
+}, 20000);
+
+document.addEventListener("input", function(e){
+
+if(!e.target.classList.contains("adresseFeld")) return;
+
+const input = e.target;
+const box = input.parentElement.querySelector("#vorschlaege");
+
+const full = input.value;
+let parts = full.split(" ");
+
+let hausnummer = null;
+let strassenTeil = [];
+
+parts.forEach(p => {
+if(/\d/.test(p)){
+hausnummer = p;
+}else{
+strassenTeil.push(p);
+}
+});
+
+const text = strassenTeil.join(" ");
+
+box.innerHTML = "";
+
+if(text.length < 2) return;
+
+let result = searchStreet(text);
+
+if(hausnummer){
+result = result.filter(s => {
+
+let nr = parseInt(hausnummer);
+
+let inU = nr >= s.vonU && nr <= s.bisU;
+let inG = nr >= s.vonG && nr <= s.bisG;
+
+return inU || inG;
+
+});
+}
+
+result.forEach(s=>{
+
+let div = document.createElement("div");
+
+div.className = "vorschlag";
+
+div.textContent = s.name+" — "+s.plz+" — "+s.stadtteil;
+
+div.onclick = ()=>{
+
+let hausnrMatch = input.value.match(/\d+\w*/);
+let hausnr = hausnrMatch ? hausnrMatch[0] : "";
+
+/* Adresse für Titel */
+
+let adresseTitel = s.name + (hausnr ? " " + hausnr : "");
+
+/* Adresse für Feld */
+
+let adresseFeld =
+adresseTitel + "\n" +
+s.plz + " " + s.stadtteil;
+
+/* Feld aktualisieren */
+
+input.value = adresseFeld;
+
+aktuelleStrasse = s;
+
+box.innerHTML = "";
+
+/* Einsatz Titel */
+
+let einsatz = input.closest(".einsatz");
+let titel = einsatz.querySelector(".einsatzTitel");
+
+titel.innerHTML =
+titel.textContent.split("–")[0].trim() +
+"<br><span class='einsatzAdresse'>" + adresseTitel + "</span>";
+
+};
+
+box.appendChild(div);
+
+});
+
+});
+
+document.getElementById("jsonDateiInput").addEventListener("change", function(event){
+
+let file = event.target.files[0];
+
+if(!file){
+return;
+}
+
+let reader = new FileReader();
+
+reader.onload = function(e){
+
+try{
+
+let neueDaten = JSON.parse(e.target.result);
+
+// 🔽 bestehende Daten holen
+let bestehend = JSON.parse(localStorage.getItem("MED_Archiv")) || [];
+
+// 🔽 für schnellen Vergleich: vorhandene Daten merken
+let vorhandeneDaten = bestehend.map(tag => tag.datum);
+
+// 🔽 nur neue Tage hinzufügen
+neueDaten.forEach(neuerTag => {
+
+  if(!vorhandeneDaten.includes(neuerTag.datum)){
+    bestehend.push(neuerTag);
+  }
+
+});
+
+// 🔽 speichern
+localStorage.setItem("MED_Archiv", JSON.stringify(bestehend));
+
+alert("Daten erfolgreich zusammengeführt.");
+
+ladeHistorie();
+
+}catch(error){
+
+alert("Fehler beim Laden der JSON-Datei.");
+
+}
+
+};
+
+reader.readAsText(file);
+
+});
+
+window.addEventListener("load", () => {
+
+document.querySelectorAll("textarea").forEach(t => {
+autoResizeTextarea(t);
+});
+
+});
+
+document.addEventListener("click", function(e){
+
+if(!e.target.classList.contains("navApple")) return;
+
+let einsatz = e.target.closest(".einsatz");
+let feld = einsatz.querySelector(".adresseFeld");
+
+if(!feld.value) return;
+
+/* nur erste Zeile (Straße + Hausnummer) */
+let zeilen = feld.value.split("\n");
+
+let strasse = zeilen[0];
+let plzOrt = zeilen[1];
+
+let adresse = strasse + ", " + plzOrt;
+
+/* URL bauen */
+let url = "http://maps.apple.com/?q=" + encodeURIComponent(adresse);
+
+/* öffnen */
+window.open(url);
+
+});
+
+document.addEventListener("click", function(e){
+
+if(!e.target.classList.contains("navGoogle")) return;
+
+let einsatz = e.target.closest(".einsatz");
+let feld = einsatz.querySelector(".adresseFeld");
+
+if(!feld.value) return;
+
+let zeilen = feld.value.split("\n");
+
+let strasse = zeilen[0];
+let plzOrt = zeilen[1];
+
+let adresse = strasse + ", " + plzOrt;
+
+let url = "https://www.google.com/maps?q=" + encodeURIComponent(adresse);
+
+window.open(url);
+
+});
+
+document.getElementById("homeNav").addEventListener("click", function(){
+
+  const adresse = "Höherweg 200, 40233 Düsseldorf"; // ← HIER anpassen
+
+const url = "https://www.google.com/maps/dir/?api=1&destination=" 
+  + encodeURIComponent(adresse) 
+  + "&travelmode=driving&dir_action=navigate";
+
+
+  window.open(url);
+
+});
+
 </script>
+
 </body>
 </html>
