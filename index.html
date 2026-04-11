@@ -1599,17 +1599,33 @@ clip-path: polygon(
         </div>
     </div>  
 
-    <div class="history-switch-wrapper" style="margin-top: 30px; padding-bottom: 20px; text-align: center; border-top: 1px dashed #ccc; padding-top: 20px;">
-      <p style="font-family: serif; font-style: italic; color: #555; margin-bottom: 10px;">Broker wechseln:</p>
-      <div style="display: flex; justify-content: center; gap: 15px;">
-        <button id="btnShowRepublic" class="button-nav" onclick="switchHistory('C')" style="min-width: 120px;">
-          Republic
-        </button>
-        <button id="btnShowScalable" class="button-nav" onclick="switchHistory('D')" style="min-width: 120px; opacity: 0.5;">
-          Scalable
-        </button>
-      </div>
-    </div>
+    <div class="history-switch-wrapper" style="
+  margin-top: 40px; 
+  padding-bottom: calc(env(safe-area-inset-bottom) + 40px); 
+  text-align: center;
+">
+  <p style="
+    font-family: serif; 
+    font-style: italic; 
+    color: #555; 
+    margin-bottom: 20px; 
+    font-size: 1.1em;
+  ">
+    Broker wechseln:
+  </p>
+  
+  <div style="display: flex; justify-content: center; gap: 15px; padding: 0 10px;">
+    <button id="btnShowRepublic" class="button-nav" onclick="switchHistory('C')">
+      Trade
+      Republic
+    </button>
+    <button id="btnShowScalable" class="button-nav" onclick="switchHistory('D')">
+      Scalable
+      Capital
+    </button>
+  </div>
+</div>
+
 
   </div> </div> ```
 
