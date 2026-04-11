@@ -102,6 +102,17 @@ body.page-open {
   text-align: center; 
 }
 
+/* Nur für die Tabelle von Depot D */
+#depotD th {
+    background-color: #d3af81 !important; /* Ein dunkleres, sattes Braun */
+    color: #000; /* Ein helleres Beige für die Schrift */
+}
+
+/* Optional: Die Zeilenfarbe ganz leicht anpassen */
+#depotD tr:nth-child(even) {
+    background-color: #fae4d9; /* Ein ganz helles Braun/Grau für Streifen-Optik */
+}
+
 
 /* =========================
    Backup-Bereich
@@ -765,7 +776,8 @@ transform: translateY(0);
 }
 
 .depot-compare-wrapper h2 {
-  padding-bottom: 18px;
+  padding-bottom: 1px;
+  margin-top:  50px;
 }
 
 
@@ -1463,6 +1475,18 @@ clip-path: polygon(
   padding-right: 12px;
 }
 
+.button-nav {
+  background-color: #5d4037; /* Dein warmes Braun */
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  font-family: sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
 </style>
 </head>
 <body>
@@ -1487,153 +1511,107 @@ clip-path: polygon(
   <div class="history-inner">
 
     <div class="page-header">
-  <h1>Mamu Trading<br>History</h1>
-
-  <button id="historyCloseBook" aria-label="Buch schließen"></button>
-
-  <button id="closeHistory"></button>
-</div>
+      <h1>Mamu Trading<br>History</h1>
+      <button id="historyCloseBook" aria-label="Buch schließen"></button>
+      <button id="closeHistory"></button>
+    </div>
 
     <div class="button-container">
       <button class="button-add">Performance</button>
-   <button id="historyUpdateToggle" class="button-update">
-     Aktualisieren
-   </button>
+      <button id="historyUpdateToggle" class="button-update">Aktualisieren</button>
     </div>
 
-  <div id="historyUpdatePanel" class="history-update-panel">
+    <div id="historyUpdatePanel" class="history-update-panel">
+      <input type="date" id="historyDate">
+      <input type="number" id="historyDepot" placeholder="Depot">
+      <input type="number" id="historyCash" placeholder="Cash">
+      <button id="historySaveBtn">Speichern</button>
+    </div>
 
-  <input type="date" id="historyDate">
+    <div id="historyPerformancePanel" class="history-performance-panel">
+      <div class="performance-head">
+        <div></div>
+        <div>Δ Betrag</div>
+        <div>Δ %</div>
+        <div>Basis</div>
+      </div>
 
-  <input type="number" id="historyDepot" placeholder="Depot">
+      <div class="performance-item">
+        <div class="performance-top">
+          <div class="perf-label">Tag</div>
+          <div class="perf-diff" id="perfDayValue">–</div>
+          <div class="perf-percent" id="perfDayPercent">–</div>
+          <div class="perf-start" id="perfDayStart">–</div>
+        </div>
+        <div class="perf-bar-wrapper"><div class="perf-bar"><div class="perf-fill" id="perfDayBar"></div></div></div>
+      </div>
 
-  <input type="number" id="historyCash" placeholder="Cash">
+      <div class="performance-item">
+        <div class="performance-top">
+          <div class="perf-label">Woche</div>
+          <div class="perf-diff" id="perfWeekValue">–</div>
+          <div class="perf-percent" id="perfWeekPercent">–</div>
+          <div class="perf-start" id="perfWeekStart">–</div>
+        </div>
+        <div class="perf-bar-wrapper"><div class="perf-bar"><div class="perf-fill" id="perfWeekBar"></div></div></div>
+      </div>
 
-  <button id="historySaveBtn">Speichern</button>
+      <div class="performance-item">
+        <div class="performance-top">
+          <div class="perf-label">Monat</div>
+          <div class="perf-diff" id="perfMonthValue">–</div>
+          <div class="perf-percent" id="perfMonthPercent">–</div>
+          <div class="perf-start" id="perfMonthStart">–</div>
+        </div>
+        <div class="perf-bar-wrapper"><div class="perf-bar"><div class="perf-fill" id="perfMonthBar"></div></div></div>
+      </div>
 
-</div>
+      <div class="performance-item">
+        <div class="performance-top">
+          <div class="perf-label">Jahr</div>
+          <div class="perf-diff" id="perfYearValue">–</div>
+          <div class="perf-percent" id="perfYearPercent">–</div>
+          <div class="perf-start" id="perfYearStart">–</div>
+        </div>
+        <div class="perf-bar-wrapper"><div class="perf-bar"><div class="perf-fill" id="perfYearBar"></div></div></div>
+      </div>
 
-<div id="historyPerformancePanel" class="history-performance-panel">
+      <div class="performance-item">
+        <div class="performance-top">
+          <div class="perf-label">Gesamt</div>
+          <div class="perf-diff" id="perfTotalValue">–</div>
+          <div class="perf-percent" id="perfTotalPercent">–</div>
+          <div class="perf-start" id="perfTotalStart">–</div>
+        </div>
+        <div class="perf-bar-wrapper"><div class="perf-bar"><div class="perf-fill" id="perfTotalBar"></div></div></div>
+      </div>
+    </div>
 
- <!-- <div class="performance-row"> -->
+    <div class="history-table">
+      <div class="history-header">
+        <div>Datum</div>
+        <div>Depot</div>
+        <div>Cash</div>
+        <div>Total</div>
+        <div>Aktion</div>
+      </div>
+      <div class="history-body">
+        </div>
+    </div>  
 
-  <div class="performance-head">
-  <div></div>
-  <div>Δ Betrag</div>
-  <div>Δ %</div>
-  <div>Basis</div>
-</div>
+    <div class="history-switch-wrapper" style="margin-top: 30px; padding-bottom: 20px; text-align: center; border-top: 1px dashed #ccc; padding-top: 20px;">
+      <p style="font-family: serif; font-style: italic; color: #555; margin-bottom: 10px;">Broker wechseln:</p>
+      <div style="display: flex; justify-content: center; gap: 15px;">
+        <button id="btnShowRepublic" class="button-nav" onclick="switchHistory('C')" style="min-width: 120px;">
+          Republic
+        </button>
+        <button id="btnShowScalable" class="button-nav" onclick="switchHistory('D')" style="min-width: 120px; opacity: 0.5;">
+          Scalable
+        </button>
+      </div>
+    </div>
 
-  <div class="performance-item">
-
-  <div class="performance-top">
-    <div class="perf-label">Tag</div>
-    <div class="perf-diff" id="perfDayValue">–</div>
-    <div class="perf-percent" id="perfDayPercent">–</div>
-    <div class="perf-start" id="perfDayStart">–</div>
-  </div>
-
-  <div class="perf-bar-wrapper">
-    <div class="perf-bar">
-      <div class="perf-fill" id="perfDayBar"></div></div>
-  </div>
-
-</div>
-
-  
-<div class="performance-item">
-
-  <div class="performance-top">
-    <div class="perf-label">Woche</div>
-    <div class="perf-diff" id="perfWeekValue">–</div>
-    <div class="perf-percent" id="perfWeekPercent">–</div>
-    <div class="perf-start" id="perfWeekStart">–</div>
-  </div>
-
-  <div class="perf-bar-wrapper">
-    <div class="perf-bar">
-      <div class="perf-fill" id="perfWeekBar"></div></div>
-  </div>
-
-</div>
-
-
-<div class="performance-item">
-
-  <div class="performance-top">
-    <div class="perf-label">Monat</div>
-    <div class="perf-diff" id="perfMonthValue">–</div>
-    <div class="perf-percent" id="perfMonthPercent">–</div>
-    <div class="perf-start" id="perfMonthStart">–</div>
-  </div>
-
-  <div class="perf-bar-wrapper">
-    <div class="perf-bar">
-      <div class="perf-fill" id="perfMonthBar"></div></div>
-  </div>
-
-</div>
-
-
-<div class="performance-item">
-
-  <div class="performance-top">
-    <div class="perf-label">Jahr</div>
-    <div class="perf-diff" id="perfYearValue">–</div>
-    <div class="perf-percent" id="perfYearPercent">–</div>
-    <div class="perf-start" id="perfYearStart">–</div>
-  </div>
-
-  <div class="perf-bar-wrapper">
-    <div class="perf-bar">
-      <div class="perf-fill" id="perfYearBar"></div></div>
-  </div>
-
-</div>
-
-  
-<div class="performance-item">
-
-  <div class="performance-top">
-    <div class="perf-label">Gesamt</div>
-    <div class="perf-diff" id="perfTotalValue">–</div>
-    <div class="perf-percent" id="perfTotalPercent">–</div>
-    <div class="perf-start" id="perfTotalStart">–</div>
-  </div>
-
-  <div class="perf-bar-wrapper">
-    <div class="perf-bar">
-      <div class="perf-fill" id="perfTotalBar"></div></div>
-  </div>
-
-</div>
-
-</div>
-
-</div>
-
-  
-  <div class="history-table">
-
-  <div class="history-header">
-    <div>Datum</div>
-    <div>Depot</div>
-    <div>Cash</div>
-    <div>Total</div>
-    <div>Aktion</div>
-  </div>
-
-  <div class="history-body">
-    <!-- Datensätze kommen später hier rein -->
-
-  </div>
-
-
-</div>  
-
-</div>
-</div>
-
+  </div> </div> ```
 
 
 
@@ -1751,21 +1729,36 @@ clip-path: polygon(
 </div>
 
 
-
 <div id="addContainer" class="add-container">
-
 
   <input type="text" id="newName" class="edit-input" placeholder="Name" style="text-align:left;">
   <input type="number" id="newAmount" class="edit-input" step="1" placeholder="Anzahl" style="text-align:left;">
   <input type="number" id="newPrice" class="edit-input" step="0.01" placeholder="Kurs (€)" style="text-align:left;">
-  <div style="display:flex; gap:5px; margin-top:5px;">
-    <label><input type="checkbox" id="addA" checked> Depot A</label>
-    <label><input type="checkbox" id="addB" checked> Depot B</label>
-    <label><input type="checkbox" id="addC" checked> Depot C</label>
+  
+  <div style="display:flex; align-items:center; gap:15px; margin-top:10px; padding-left: 5px;">
+    <span style="font-weight:bold; color:#5d4037; min-width: 50px;">Depot:</span>
+    
+    <div style="display:flex; gap:10px;">
+      <label style="cursor:pointer; display:flex; align-items:center; gap:3px;">
+        <input type="checkbox" id="addA" checked>A
+      </label>
+      <label style="cursor:pointer; display:flex; align-items:center; gap:3px;">
+        <input type="checkbox" id="addB" checked>B
+      </label>
+      <label style="cursor:pointer; display:flex; align-items:center; gap:3px;">
+        <input type="checkbox" id="addC" checked>C
+      </label>
+      <label style="cursor:pointer; display:flex; align-items:center; gap:3px;">
+        <input type="checkbox" id="addD" checked>D
+      </label>
+    </div>
   </div>
-  <button class="button-add" onclick="addRow()">Hinzufügen</button>
+
+  <button class="button-add" onclick="addRow()" style="margin-top:15px;">Hinzufügen</button>
   
 </div>
+
+
 
 <div id="updateContainer" class="update-container"></div>
 
@@ -1970,6 +1963,10 @@ clip-path: polygon(
 </div>
 </div>
 
+
+
+
+
 <!--          Depot ABC Ende              -->
 
 <div class="depot-compare-wrapper">
@@ -2022,6 +2019,40 @@ clip-path: polygon(
 
 </div>
 
+<h2>
+  <span class="section-label depot-button" onclick="openDepotCard('D')">
+    Depot D
+  </span>
+</h2>
+
+<div class="flex-item">
+<table id="depotD"><tr><th>Name</th><th>Anzahl</th><th>Kurs (€)</th><th>Wert (€)</th><th>Aktion</th></tr></table>
+
+<div class="cash-row">
+ <span
+  class="cash-label cash-label--short cash-button"
+  onclick="openCashPopup('D')"
+>
+  Cash
+</span>
+  
+<button
+  type="button"
+  id="cashD"
+  class="cash-display"
+></button>
+</div>
+
+<div class="cash-row">
+  <span class="cash-label cash-label--long">Gesamtwert</span>
+  <input
+   type="text"
+   id="totalValueD"
+   class="total-input"
+   readonly
+>
+</div>
+</div>
 
 
 <div class="footer-actions">
@@ -2092,32 +2123,43 @@ function saveAppData() {
 // ================================
 // APP-DATEN LADEN
 // ================================
-
 function loadAppData() {
   const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return; // erstes Öffnen → nichts zu laden
+  if (!raw) return; 
 
   try {
     const parsed = JSON.parse(raw);
     if (parsed && parsed.depots && parsed.cash) {
       appData = parsed;
 
-    if (!appData.history) {
-  appData.history = [];
-} 
+      if (!appData.history) {
+        appData.history = [];
+      } 
 
-    if (!appData.depotInfo) {
-  appData.depotInfo = {
-    A: { broker: "", opened: "", closed: "" },
-    B: { broker: "", opened: "", closed: "" },
-    C: { broker: "", opened: "", closed: "" }
-  };
-}  
+      // 1. Ergänzung: Depot D in die Stammdaten (depotInfo) aufnehmen
+      if (!appData.depotInfo) {
+        appData.depotInfo = {
+          A: { broker: "", opened: "", closed: "" },
+          B: { broker: "", opened: "", closed: "" },
+          C: { broker: "", opened: "", closed: "" },
+          D: { broker: "", opened: "", closed: "" } // Hier das D ergänzt
+        };
+      } else if (!appData.depotInfo.D) {
+        // Falls depotInfo existiert, aber D noch fehlt (wichtig für Altdaten!)
+        appData.depotInfo.D = { broker: "", opened: "", closed: "" };
+      }
 
-      // Referenzen sauber neu setzen
+      // 2. Ergänzung: Falls Depot D in appData.depots noch fehlt, neu anlegen
+      if (!appData.depots.D) {
+        appData.depots.D = [];
+      }
+      
+      // 3. Ergänzung: Referenz sauber setzen
       depotA = appData.depots.A;
       depotB = appData.depots.B;
       depotC = appData.depots.C;
+      depotD = appData.depots.D; // Hier das D ergänzt
+      
     }
   } catch (e) {
     console.warn("Daten konnten nicht geladen werden:", e);
@@ -2125,6 +2167,7 @@ function loadAppData() {
 }
 
 
+let currentHistoryView = 'C';
 
 // ================================
 // ZENTRALE APP-DATEN
@@ -2133,20 +2176,24 @@ let appData = {
   depots: {
     A: [],
     B: [],
-    C: []
+    C: [],
+    D: [] 
   },
   depotInfo: {
     A: { broker: "", opened: "", closed: "" },
     B: { broker: "", opened: "", closed: "" },
-    C: { broker: "", opened: "", closed: "" }
+    C: { broker: "", opened: "", closed: "" },
+    D: { broker: "", opened: "", closed: "" }
   },
   cash: {
     A: 0,
     B: 0,
-    C: 0
+    C: 0,
+    D: 0 
   },
 
-history: [],
+  history: [],
+  historyD: [], // NEU: Hier kommt der Verlauf für Scalable rein!
 
   meta: {
     lastSaved: null,
@@ -2154,34 +2201,26 @@ history: [],
   }
 };
 
-
-
 // Alte Variablen zeigen nur noch auf appData
 let depotA = appData.depots.A;
 let depotB = appData.depots.B;
 let depotC = appData.depots.C;
-
-
+let depotD = appData.depots.D; // Hast du ja bereits perfekt ergänzt!
 
 // ================================
-// CASH-DATEN
+// CASH-DATEN & HISTORY-CHECK
 // ================================
-appData.cash = {
-  A: 0,
-  B: 0,
-  C: 0
-};
-
-
+// Wir stellen sicher, dass auch historyD beim Laden existiert
+if (!appData.historyD) {
+  appData.historyD = [];
+}
 
 // 🔒 Sicherstellen, dass Depot-Arrays immer existieren
-["A","B","C"].forEach(d => {
+["A","B","C","D"].forEach(d => { 
   if (!Array.isArray(appData.depots[d])) {
     appData.depots[d] = [];
   }
 });
-
-
 
 
 
@@ -2190,14 +2229,16 @@ function calcTotals(){
   console.log("calcTotals START");  
   
   function parseCash(id){ return parseFloat((document.getElementById(id).dataset.value||"0"))||0; }
-  let totalA=parseCash("cashA"), totalB=parseCash("cashB"), totalC=parseCash("cashC");
+  
+  // 1. Berechnung um D erweitern
+  let totalA=parseCash("cashA"), totalB=parseCash("cashB"), totalC=parseCash("cashC"), totalD=parseCash("cashD");
+  
   depotA.forEach(i=>totalA+=i.amount*i.price);
   depotB.forEach(i=>totalB+=i.amount*i.price);
   depotC.forEach(i=>totalC+=i.amount*i.price);
+  depotD.forEach(i=>totalD+=i.amount*i.price); // NEU: Werte für D addieren
 
-
-
-
+  // (Die diff-Berechnungen für A/B/C lassen wir so, außer du möchtest D auch vergleichen)
   let diffAB=totalB-totalA, diffAC=totalC-totalA, diffCB=totalC-totalB;
 
   document.getElementById("diffAB").innerText=formatNumber(diffAB)+" €";
@@ -2206,6 +2247,7 @@ function calcTotals(){
 
   function setBar(diff,id,total1,total2){
     let bar=document.getElementById(id);
+    if(!bar) return; // Sicherheit, falls das Element nicht existiert
     let maxTotal=Math.max(total1,total2,1);
     let percent=(Math.abs(diff)/maxTotal)*(100/0.025);
     if(percent>100) percent=100;
@@ -2221,29 +2263,28 @@ function calcTotals(){
   setBar(diffAC,"diffFillAC",totalA,totalC);
   setBar(diffCB,"diffFillCB",totalB,totalC);
   
-/* Dieser Block berechnet den Gesamtwert und zeigt ihn im Zahlenfeld an */  
+  // 2. Anzeige der Gesamtwerte (inklusive Depot D)
   
   const totalInputA = document.getElementById("totalValueA");
-if (totalInputA) {
-  totalInputA.value = formatNumber(totalA);
-}
-console.log("totalValueA =", totalInputA ? totalInputA.value : "NICHT GEFUNDEN");
+  if (totalInputA) totalInputA.value = formatNumber(totalA);
 
   const totalInputB = document.getElementById("totalValueB");
-if (totalInputB) {
-  totalInputB.value = formatNumber(totalB);
-}
-console.log("totalValueB =", totalInputB ? totalInputB.value : "NICHT GEFUNDEN");
+  if (totalInputB) totalInputB.value = formatNumber(totalB);
 
   const totalInputC = document.getElementById("totalValueC");
-if (totalInputC) {
-  totalInputC.value = formatNumber(totalC);
+  if (totalInputC) totalInputC.value = formatNumber(totalC);
+
+  // NEU: Anzeige für Depot D
+  const totalInputD = document.getElementById("totalValueD");
+  if (totalInputD) {
+    totalInputD.value = formatNumber(totalD);
+  }
+
+  console.log("totalValueD =", totalInputD ? totalInputD.value : "NICHT GEFUNDEN");
+  console.log("calcTotals END");
 }
 
-console.log("totalValueC =", totalInputC ? totalInputC.value : "NICHT GEFUNDEN");
 
-console.log("calcTotals END");
-}
 
 function updateAll() {
   saveAppData();
@@ -2251,21 +2292,27 @@ function updateAll() {
   calcTotals();
 }
 
-
 function renderHistory() {
-
   const container = document.querySelector(".history-body");
   if (!container) return;
 
   container.innerHTML = "";
 
-  appData.history
-    .slice()
-    .sort((a,b) => new Date(b.date) - new Date(a.date))
-    .forEach((entry) => {
+  // WEICHE: Welche Daten nehmen wir?
+  const historySource = (currentHistoryView === 'D') ? appData.historyD : appData.history;
 
+  // Sortieren und Anzeigen
+  historySource
+    .slice()
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .forEach((entry) => {
       const row = document.createElement("div");
       row.className = "history-row";
+
+      // Optischer Clue: Wenn wir in Depot D sind, geben wir der Zeile eine Klasse
+      if (currentHistoryView === 'D') {
+          row.classList.add("history-row-scalable");
+      }
 
       row.innerHTML = `
         <div>${formatDate(entry.date)}</div>
@@ -2273,55 +2320,65 @@ function renderHistory() {
         <div>${formatNumber(entry.cash)}</div>
         <div>${formatNumber(entry.total)}</div>
         <div>
-          <button class="button-del">
-            ENTF
-          </button>
+          <button class="button-del">ENTF</button>
         </div>
       `;
 
       container.appendChild(row);
 
+      // Lösch-Logik (ebenfalls mit Weiche)
       row.querySelector(".button-del").addEventListener("click", function () {
+        row.classList.add("history-row-highlight");
 
-  row.classList.add("history-row-highlight");
+        setTimeout(() => {
+          const confirmed = confirm(`Eintrag vom ${formatDate(entry.date)} wirklich löschen?`);
 
-  setTimeout(() => {
+          if (!confirmed) {
+            row.classList.remove("history-row-highlight");
+            return;
+          }
 
-    const confirmed = confirm(
-      `Eintrag vom ${formatDate(entry.date)} wirklich löschen?`
-    );
+          // Im richtigen Array suchen
+          const realIndex = historySource.findIndex(item => item.date === entry.date);
 
-    if (!confirmed) {
-      row.classList.remove("history-row-highlight");
-      return;
-    }
-
-    const realIndex = appData.history.findIndex(
-      item => item.date === entry.date
-    );
-
-    if (realIndex !== -1) {
-      appData.history.splice(realIndex, 1);
-      saveAppData();
-      renderHistory();
-    }
-
-  }, 50); // kleine Verzögerung für Rendering
-
-});
-
+          if (realIndex !== -1) {
+            historySource.splice(realIndex, 1);
+            saveAppData();
+            renderHistory();
+          }
+        }, 50);
+      });
     });
+}
+
+function switchHistory(view) {
+    currentHistoryView = view;
+    
+    // Optional: Aktiven Button optisch hervorheben
+    document.getElementById("btnShowRepublic").style.opacity = (view === 'C') ? "1" : "0.5";
+    document.getElementById("btnShowScalable").style.opacity = (view === 'D') ? "1" : "0.5";
+    
+    renderHistory();
+    
+    // Falls das Performance-Panel offen ist, aktualisieren wir das auch direkt mit
+    if (document.getElementById("historyPerformancePanel").classList.contains("active")) {
+        updatePerformanceDisplay();
+    }
 }
 
 
 function calculatePerformance(period) {
+  // WEICHE: Welche Datenquelle nutzen wir?
+  const source = (currentHistoryView === 'D') ? appData.historyD : appData.history;
 
-  if (!appData.history || appData.history.length < 2) {
+  // Check, ob genug Daten vorhanden sind
+  if (!source || source.length < 2) {
     return null;
   }
 
-  const history = [...appData.history]
-    .sort((a,b) => new Date(a.date) - new Date(b.date));
+  // Mit der gewählten Quelle arbeiten
+  const history = [...source]
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
 
   const latest = history[history.length - 1];
   const todayDate = new Date(latest.date);
@@ -2329,48 +2386,37 @@ function calculatePerformance(period) {
   let startEntry = null;
 
   if (period === "day") {
-
     if (history.length < 2) return null;
-
     startEntry = history[history.length - 2];
-
   }
 
   if (period === "week") {
-
     const firstDay = new Date(todayDate);
     const day = firstDay.getDay() || 7;
     firstDay.setDate(firstDay.getDate() - day + 1);
-    firstDay.setHours(0,0,0,0);
+    firstDay.setHours(0, 0, 0, 0);
 
     startEntry = history.find(entry => 
       new Date(entry.date) >= firstDay
     );
-
   }
 
   if (period === "month") {
-
     startEntry = history.find(entry => {
       const d = new Date(entry.date);
       return d.getMonth() === todayDate.getMonth() &&
              d.getFullYear() === todayDate.getFullYear();
     });
-
   }
 
   if (period === "year") {
-
     startEntry = history.find(entry => 
       new Date(entry.date).getFullYear() === todayDate.getFullYear()
     );
-
   }
 
   if (period === "total") {
-
     startEntry = history[0];
-
   }
 
   if (!startEntry) return null;
@@ -2389,9 +2435,7 @@ function calculatePerformance(period) {
     startValue,
     currentValue
   };
-
 }
-
 
 
 function updatePerformanceDisplay() {
@@ -2490,48 +2534,76 @@ function triggerImport() {
 
 
 
+function renderTable() {
+  // Zuerst holen wir uns die aktuellen Daten für alle Depots
+  const depotA = appData.depots.A;
+  const depotB = appData.depots.B;
+  const depotC = appData.depots.C;
+  
+  // Hier stellen wir sicher, dass depotD aus den appData geladen wird
+  const depotD = appData.depots.D || []; 
 
+  function fillTable(dep, tableId) {
+    if (!document.getElementById(tableId)) return;
 
-
-function renderTable(){
-  function fillTable(dep,tableId){
-
-  // 🔥 Automatisch nach höchstem Depotwert sortieren
-  dep.sort((a, b) => (b.amount * b.price) - (a.amount * a.price));
+    // Automatisch nach höchstem Depotwert sortieren
     const sortedDep = [...dep].sort((a, b) => (b.amount * b.price) - (a.amount * a.price));
-    let table=document.getElementById(tableId);
-    table.innerHTML="<tr><th>Name</th><th>Anzahl</th><th>Kurs (€)</th><th>Wert (€)</th><th>Aktion</th></tr>";
-    sortedDep.forEach((item,i)=>{
-      let row=table.insertRow();
-      let nameCell=row.insertCell(); nameCell.innerText=item.name; nameCell.className="name-cell";
+    
+    let table = document.getElementById(tableId);
+    table.innerHTML = "<tr><th>Name</th><th>Anzahl</th><th>Kurs (€)</th><th>Wert (€)</th><th>Aktion</th></tr>";
+    
+    sortedDep.forEach((item, i) => {
+      let row = table.insertRow();
+      let nameCell = row.insertCell(); 
+      nameCell.innerText = item.name; 
+      nameCell.className = "name-cell";
 
-      let amtCell=row.insertCell();
-      let inputAmt=document.createElement("input");
-      inputAmt.type="number"; inputAmt.step="1"; inputAmt.className="amount-input"; 
-      inputAmt.value=item.amount;
-      inputAmt.onclick=e=>{ openAmountPopup(i, tableId); e.target.blur(); };
+      let amtCell = row.insertCell();
+      let inputAmt = document.createElement("input");
+      inputAmt.type = "number"; 
+      inputAmt.step = "1"; 
+      inputAmt.className = "amount-input"; 
+      inputAmt.value = item.amount;
+      // WICHTIG: Hier muss dep übergeben werden, damit das Popup weiß, aus welchem Depot gelöscht/geändert wird
+      inputAmt.onclick = e => { openAmountPopup(i, tableId, dep); e.target.blur(); };
       amtCell.appendChild(inputAmt);
 
-      let priceCell=row.insertCell();
-      let inputPrice=document.createElement("input");
-      inputPrice.type="number"; inputPrice.step="0.01"; inputPrice.className="price-input"; 
-      inputPrice.onchange=e=>{item.price=parseFloat(e.target.value); saveAppData(); calcTotals(); renderTable();};
-      inputPrice.value=item.price;
+      let priceCell = row.insertCell();
+      let inputPrice = document.createElement("input");
+      inputPrice.type = "number"; 
+      inputPrice.step = "0.01"; 
+      inputPrice.className = "price-input"; 
+      inputPrice.onchange = e => { 
+        item.price = parseFloat(e.target.value); 
+        updateAll(); // Wir nutzen hier am besten deine updateAll(), die alles in einem Rutsch macht
+      };
+      inputPrice.value = item.price;
       priceCell.appendChild(inputPrice);
 
-      let valueCell=row.insertCell(); valueCell.innerText=formatNumber(item.amount*item.price);
+      let valueCell = row.insertCell(); 
+      valueCell.innerText = formatNumber(item.amount * item.price);
 
-      let actionCell=row.insertCell();
-      let delBtn=document.createElement("button"); delBtn.innerText="ENTF"; delBtn.className="button-del";
-      delBtn.onclick=()=>{ showDeletePopup(item,dep); };
+      let actionCell = row.insertCell();
+      let delBtn = document.createElement("button"); 
+      delBtn.innerText = "ENTF"; 
+      delBtn.className = "button-del";
+      delBtn.onclick = () => { showDeletePopup(item, dep); };
       actionCell.appendChild(delBtn);
     });
   }
-  fillTable(depotA,"depotA");
-  fillTable(depotB,"depotB");
-  fillTable(depotC,"depotC");
+
+  fillTable(depotA, "depotA");
+  fillTable(depotB, "depotB");
+  fillTable(depotC, "depotC");
+  fillTable(depotD, "depotD"); 
+  
+  // Wir rufen hier calcTotals auf, um die Zahlen direkt zu aktualisieren
   calcTotals();
 }
+
+
+
+
 
 let deleteItem=null, deleteDepot=null;
 function showDeletePopup(item,depot){
@@ -2550,10 +2622,12 @@ function showDeletePopup(item,depot){
 
 function openAmountPopup(index, tableId) {
 
+  // Hier erweitern wir die Abfrage um Depot D
   const depotKey =
     tableId === "depotA" ? "A" :
     tableId === "depotB" ? "B" :
-    "C";
+    tableId === "depotC" ? "C" :
+    "D"; // Wenn es nicht A, B oder C ist, muss es D sein
 
   document.getElementById("popupLabel").innerText =
     "Anzahl ändern";
@@ -2565,8 +2639,9 @@ function openAmountPopup(index, tableId) {
     const val = parseFloat(document.getElementById("popupInput").value);
 
     if (!isNaN(val)) {
+      // Dank des neuen depotKey landet der Wert jetzt im richtigen Array
       appData.depots[depotKey][index].amount = val;
-      updateAll();   // 💥 DAS ist jetzt stabil
+      updateAll(); 
     }
 
     closePopup();
@@ -2574,6 +2649,7 @@ function openAmountPopup(index, tableId) {
 
   document.getElementById("popup").style.display = "flex";
 }
+
 
 let cashDepot=null;
 function openCashPopup(depot){
@@ -2634,20 +2710,23 @@ function toggleUpdate() {
   }
 
   // ==========================
-  // ÖFFNEN
-  // ==========================
-  container.innerHTML = "";
-  container.style.display = "flex";
+// ÖFFNEN
+// ==========================
+container.innerHTML = "";
+container.style.display = "flex";
 
- // Alle Namen sammeln (A, B, C)
+// Alle Namen sammeln (A, B, C und jetzt auch D)
 let allNames = [];
-[depotA, depotB, depotC].forEach(dep => {
-  dep.forEach(item => {
-    if (!allNames.includes(item.name)) allNames.push(item.name);
-  });
+// 1. ÄNDERUNG: depotD in die Liste der zu scannenden Depots aufnehmen
+[depotA, depotB, depotC, depotD].forEach(dep => {
+  if (dep) { // Sicherheitscheck, falls depotD mal undefined sein sollte
+    dep.forEach(item => {
+      if (!allNames.includes(item.name)) allNames.push(item.name);
+    });
+  }
 });
 
-// Depot C nach Wert sortieren
+// Depot C nach Wert sortieren (Das bleibt dein Referenz-Depot für die Sortierung)
 const sortedDepotC = [...depotC].sort((a,b)=>(b.amount*b.price)-(a.amount*a.price));
 const orderMap = {};
 sortedDepotC.forEach((item,index)=>{
@@ -2656,7 +2735,6 @@ sortedDepotC.forEach((item,index)=>{
 
 // Reihenfolge von Depot C übernehmen
 allNames.sort((a,b)=>{
-
   const indexA = orderMap[a];
   const indexB = orderMap[b];
 
@@ -2668,8 +2746,8 @@ allNames.sort((a,b)=>{
   if(indexB === undefined) return -1;
 
   return indexA - indexB;
-
 });
+
 
   allNames.forEach(name => {
     let div = document.createElement("div");
@@ -2689,7 +2767,8 @@ allNames.sort((a,b)=>{
     container.appendChild(div);
   });
 
-  // ==========================
+
+    // ==========================
   // AKTUALISIEREN-BUTTON
   // ==========================
   let btn = document.createElement("button");
@@ -2699,27 +2778,36 @@ allNames.sort((a,b)=>{
   btn.onclick = () => {
     let rows = container.querySelectorAll(".update-row");
 	
-   rows.forEach(row => {
-  const name = row.querySelector("label").dataset.symbol;
-  const val = parseFloat(row.querySelector("input").value);
+    rows.forEach(row => {
+      const name = row.querySelector("label").dataset.symbol;
+      const val = parseFloat(row.querySelector("input").value);
 
-  if (isNaN(val)) return;
+      if (isNaN(val)) return;
 
-  [depotA, depotB, depotC].forEach(dep => {
-    dep.forEach(item => {
-      if (item.name === name) {
-        item.price = val;
-      }
+      // Geht durch alle Depots (inkl. D) und aktualisiert die Preise
+      [depotA, depotB, depotC, depotD].forEach(dep => {
+        if (dep) {
+          dep.forEach(item => {
+            if (item.name === name) {
+              item.price = val;
+            }
+          });
+        }
+      });
     });
-  });
-});
 
-    saveAppData();
-    renderTable();
+    // 1. Alles in einem Rutsch erledigen: Speichern, Tabelle neu zeichnen, Summen rechnen
+    updateAll(); 
 
-    // 🔁 sauber schließen inkl. Screenshot-Reset
-    toggleUpdate();
+    // 2. Das Fenster schließen
+    closePopup(); 
+
+    // 3. Den Screenshot-Modus / Button-Status zurücksetzen
+    if (typeof toggleUpdate === "function") {
+      toggleUpdate();
+    }
   };
+
 
   container.appendChild(btn);
 
@@ -2737,28 +2825,51 @@ allNames.sort((a,b)=>{
  
 
 
-
-
 function addRow(){
-  let name=document.getElementById("newName").value;
-  let amount=parseFloat(document.getElementById("newAmount").value);
-  let price=parseFloat(document.getElementById("newPrice").value);
-  if(!name||isNaN(amount)||isNaN(price)) return;
-  if(document.getElementById("addA").checked) depotA.push({name,amount,price});
-  if(document.getElementById("addB").checked) depotB.push({name,amount,price});
-  if(document.getElementById("addC").checked) depotC.push({name,amount,price});
-  saveAppData(); renderTable();
-  document.getElementById("newName").value="";
-  document.getElementById("newAmount").value="";
-  document.getElementById("newPrice").value="";
-  toggleAdd();
+  let name = document.getElementById("newName").value;
+  let amount = parseFloat(document.getElementById("newAmount").value);
+  let price = parseFloat(document.getElementById("newPrice").value);
+  
+  if(!name || isNaN(amount) || isNaN(price)) return;
+
+  // Hier prüfen wir, welches Häkchen gesetzt wurde
+  if(document.getElementById("addA").checked) appData.depots.A.push({name, amount, price});
+  if(document.getElementById("addB").checked) appData.depots.B.push({name, amount, price});
+  if(document.getElementById("addC").checked) appData.depots.C.push({name, amount, price});
+  if(document.getElementById("addD") && document.getElementById("addD").checked) {
+      appData.depots.D.push({name, amount, price});
+  }
+
+  // Wir nutzen wieder unsere zentrale Funktion für alles
+  updateAll(); 
+
+  // Felder leeren
+  document.getElementById("newName").value = "";
+  document.getElementById("newAmount").value = "";
+  document.getElementById("newPrice").value = "";
+  
+  if (typeof toggleAdd === "function") toggleAdd();
 }
 
 function clearAll(){
-  if(confirm("Alle Daten löschen?")){
-    depotA=[]; depotB=[]; depotC=[];
-    ["cashA","cashB","cashC"].forEach(id=>{document.getElementById(id).dataset.value="0"; document.getElementById(id).value=formatNumber(0);});
-    saveAppData(); renderTable();
+  if(confirm("Alle Daten wirklich löschen (inkl. Depot D)?")){
+    // Alle Depots leeren
+    appData.depots.A = []; 
+    appData.depots.B = []; 
+    appData.depots.C = [];
+    appData.depots.D = [];
+
+    // Alle Cash-Werte zurücksetzen
+    ["cashA","cashB","cashC","cashD"].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) {
+        el.dataset.value = "0"; 
+        el.innerText = formatNumber(0); // Falls es ein Button ist
+        el.value = formatNumber(0);     // Falls es ein Input ist
+      }
+    });
+
+    updateAll();
   }
 }
 
@@ -2988,10 +3099,13 @@ function openDepotCard(depotKey) {
   if (!card || !title) return;
 
   currentDepotKey = depotKey;
-
   title.innerText = "Depot " + depotKey;
 
-  // Gespeicherte Daten laden
+  // Diese Zeile ist wichtig: Wir stellen sicher, dass Depot D existiert
+  if (!appData.depotInfo[depotKey]) {
+      appData.depotInfo[depotKey] = { broker: "", opened: "", closed: "" };
+  }
+
   const info = appData.depotInfo[depotKey];
 
   document.getElementById("depotBroker").value = info.broker || "";
@@ -3000,7 +3114,6 @@ function openDepotCard(depotKey) {
 
   card.style.display = "flex";
 }
-
 
 // =========================
 // STARTZUSTAND FESTLEGEN
@@ -3014,6 +3127,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const hasNewAppData = localStorage.getItem(STORAGE_KEY);
 
   if (!hasNewAppData) {
+    // Falls jemand von einer ganz alten Version kommt (nur A, B, C)
     const oldDepotA = JSON.parse(localStorage.getItem("depotA") || "[]");
     const oldDepotB = JSON.parse(localStorage.getItem("depotB") || "[]");
     const oldDepotC = JSON.parse(localStorage.getItem("depotC") || "[]");
@@ -3042,12 +3156,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadAppData();
 
-  ["A","B","C"].forEach(d => {
+  // 1. ÄNDERUNG: Depot D beim Starten anzeigen (Cash-Werte)
+  ["A","B","C","D"].forEach(d => {
     const el = document.getElementById("cash" + d);
     if (!el) return;
     const val = appData.cash[d] || 0;
     el.dataset.value = val;
-    el.innerText = formatNumber(val);
+    // Prüfen ob Button oder Input/Span
+    if (el.tagName === "BUTTON" || el.tagName === "SPAN") {
+        el.innerText = formatNumber(val);
+    } else {
+        el.value = formatNumber(val);
+    }
   });
 
   appState = "cover";
@@ -3057,7 +3177,7 @@ document.addEventListener("DOMContentLoaded", () => {
     mantra.style.display = "none";
   }
 
-  // ✅ IMPORT-BLOCK GEHÖRT HIER REIN
+  // ✅ IMPORT-BLOCK
   const importInput = document.getElementById("importFileInput");
   if (importInput) {
     importInput.addEventListener("change", function () {
@@ -3075,16 +3195,21 @@ document.addEventListener("DOMContentLoaded", () => {
           }
 
           appData = imported;
+          
+          // 2. ÄNDERUNG: Referenzen für alle vier Depots setzen
           depotA = appData.depots.A || [];
           depotB = appData.depots.B || [];
           depotC = appData.depots.C || [];
+          depotD = appData.depots.D || [];
 
-          ["A","B","C"].forEach(d => {
+          // 3. ÄNDERUNG: Anzeige nach Import für alle vier Depots auffrischen
+          ["A","B","C","D"].forEach(d => {
             const el = document.getElementById("cash" + d);
             if (!el) return;
             const val = appData.cash[d] || 0;
             el.dataset.value = val;
             el.innerText = formatNumber(val);
+            if (el.value !== undefined) el.value = formatNumber(val);
           });
 
           saveAppData();
@@ -3099,8 +3224,9 @@ document.addEventListener("DOMContentLoaded", () => {
       reader.readAsText(file);
     });
   }
-
 });
+
+
 
 function sortDepotByValue(depotId) {
 
@@ -3379,7 +3505,7 @@ setTimeout(() => {
 
 }, 3600);
 
- const total = getTotalCapitalC();
+ const total = getTotalCapitalCombined();
 
 const formatted = total.toLocaleString("de-DE", {
   minimumFractionDigits: 2,
@@ -3489,19 +3615,31 @@ function closeCapitalScreen() {
 }
 
 
-function getTotalCapitalC() {
 
-  // Aktienwert berechnen
+function getTotalCapitalCombined() {
+  // 1. Aktienwerte von C UND D berechnen
   let stockValue = 0;
+  
+  // Werte aus Depot C
   appData.depots.C.forEach(item => {
     stockValue += item.amount * item.price;
   });
+  
+  // Werte aus Depot D hinzufügen
+  if (appData.depots.D) {
+    appData.depots.D.forEach(item => {
+      stockValue += item.amount * item.price;
+    });
+  }
 
-  // Cash addieren
-  const cash = appData.cash.C || 0;
+  // 2. Cash von C UND D addieren
+  const cashC = appData.cash.C || 0;
+  const cashD = appData.cash.D || 0;
 
-  return stockValue + cash;
+  // Das Endergebnis ist die Summe aus allem
+  return stockValue + cashC + cashD;
 }
+
 
 //  function openHistoryOverlay() {
 //  document.getElementById("historyOverlay").style.display = "block";
@@ -3532,40 +3670,55 @@ function closeHistoryOverlay() {
 document.getElementById("closeHistory")
   .addEventListener("click", closeHistoryOverlay);
 
+function saveTodayToHistory() {
+  const today = new Date().toISOString().slice(0, 10);
 
- function saveTodayToHistory() {
+  // --- FUNKTION ZUM SPEICHERN ODER AKTUALISIEREN ---
+  function updateOrPush(historyArray, stockValue, cashValue) {
+    const totalValue = stockValue + cashValue;
+    const newEntry = {
+      date: today,
+      depot: stockValue,
+      cash: cashValue,
+      total: totalValue
+    };
 
-  const today = new Date().toISOString().slice(0,10);
+    const existingIndex = historyArray.findIndex(entry => entry.date === today);
 
-  // Prüfen ob für heute schon gespeichert wurde
-  const alreadyExists = appData.history.some(entry => entry.date === today);
-
-  if (alreadyExists) {
-    alert("Für heute existiert bereits ein History-Eintrag.");
-    return;
+    if (existingIndex !== -1) {
+      // Falls Eintrag existiert: Überschreiben
+      historyArray[existingIndex] = newEntry;
+    } else {
+      // Falls kein Eintrag existiert: Neu hinzufügen
+      historyArray.push(newEntry);
+    }
   }
 
-  // Gesamtwert und Cash von Depot C holen
-  const totalValueField = document.getElementById("totalValueC");
-  const total = parseFloat(
-    totalValueField.value.replace(/\./g,"").replace(",",".")
-  ) || 0;
+  // 1. Daten für TRADE REPUBLIC (C) berechnen
+  let stockValueC = 0;
+  if (appData.depots.C) {
+    appData.depots.C.forEach(item => stockValueC += item.amount * item.price);
+  }
+  const cashC = appData.cash.C || 0;
+  updateOrPush(appData.history, stockValueC, cashC);
 
-  const cash = appData.cash.C || 0;
+  // 2. Daten für SCALABLE (D) berechnen
+  if (!appData.historyD) appData.historyD = [];
+  let stockValueD = 0;
+  if (appData.depots.D) {
+    appData.depots.D.forEach(item => stockValueD += item.amount * item.price);
+  }
+  const cashD = appData.cash.D || 0;
+  updateOrPush(appData.historyD, stockValueD, cashD);
 
-  const entry = {
-    date: today,
-    depot: total - cash,
-    cash: cash,
-    total: total
-  };
-
-  appData.history.push(entry);
+  // Speichern und Ansicht aktualisieren
   saveAppData();
   renderHistory();
-
   openHistoryOverlay();
-} 
+  
+  // Kleiner Hinweis zur Bestätigung
+  alert("History wurde auf den neuesten Stand gebracht ✅");
+}
 
 
 document.getElementById("historySaveBtn")
