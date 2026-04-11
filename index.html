@@ -1747,26 +1747,22 @@ clip-path: polygon(
 
 <div id="addContainer" class="add-container">
 
-  <input type="text" id="newName" class="edit-input" placeholder="Name" style="text-align:left;">
+  <input type="text" id="newName" class="edit-input" list="stockSuggestions" placeholder="Name" style="text-align:left;">
+  
+  <datalist id="stockSuggestions"></datalist>
+
   <input type="number" id="newAmount" class="edit-input" step="1" placeholder="Anzahl" style="text-align:left;">
+  
   <input type="number" id="newPrice" class="edit-input" step="0.01" placeholder="Kurs (€)" style="text-align:left;">
   
   <div style="display:flex; align-items:center; gap:15px; margin-top:10px; padding-left: 5px;">
     <span style="font-weight:bold; color:#5d4037; min-width: 50px;">Depot:</span>
     
     <div style="display:flex; gap:10px;">
-      <label style="cursor:pointer; display:flex; align-items:center; gap:3px;">
-        <input type="checkbox" id="addA" checked>A
-      </label>
-      <label style="cursor:pointer; display:flex; align-items:center; gap:3px;">
-        <input type="checkbox" id="addB" checked>B
-      </label>
-      <label style="cursor:pointer; display:flex; align-items:center; gap:3px;">
-        <input type="checkbox" id="addC" checked>C
-      </label>
-      <label style="cursor:pointer; display:flex; align-items:center; gap:3px;">
-        <input type="checkbox" id="addD" checked>D
-      </label>
+      <label style="cursor:pointer; display:flex; align-items:center; gap:3px;"><input type="checkbox" id="addA" >A</label>
+      <label style="cursor:pointer; display:flex; align-items:center; gap:3px;"><input type="checkbox" id="addB" >B</label>
+      <label style="cursor:pointer; display:flex; align-items:center; gap:3px;"><input type="checkbox" id="addC" >C</label>
+      <label style="cursor:pointer; display:flex; align-items:center; gap:3px;"><input type="checkbox" id="addD" >D</label>
     </div>
   </div>
 
@@ -2835,37 +2831,88 @@ allNames.sort((a,b)=>{
 }
   
   
-  
-  
-
- 
-
-
-function addRow(){
-  let name = document.getElementById("newName").value;
+function addRow() {
+  let name = document.getElementById("newName").value.trim();
   let amount = parseFloat(document.getElementById("newAmount").value);
   let price = parseFloat(document.getElementById("newPrice").value);
   
-  if(!name || isNaN(amount) || isNaN(price)) return;
-
-  // Hier prüfen wir, welches Häkchen gesetzt wurde
-  if(document.getElementById("addA").checked) appData.depots.A.push({name, amount, price});
-  if(document.getElementById("addB").checked) appData.depots.B.push({name, amount, price});
-  if(document.getElementById("addC").checked) appData.depots.C.push({name, amount, price});
-  if(document.getElementById("addD") && document.getElementById("addD").checked) {
-      appData.depots.D.push({name, amount, price});
+  if (!name || isNaN(amount) || isNaN(price)) {
+      alert("Bitte alle Felder korrekt ausfüllen.");
+      return;
   }
 
-  // Wir nutzen wieder unsere zentrale Funktion für alles
+  // Liste der Depots, die wir prüfen wollen
+  const depotIds = ["A", "B", "C", "D"];
+
+  depotIds.forEach(id => {
+    const checkbox = document.getElementById("add" + id);
+    
+    // Nur wenn die Checkbox existiert und angewählt ist
+    if (checkbox && checkbox.checked) {
+      
+      // Sicherheits-Check: Falls das Array für dieses Depot fehlt, erstellen
+      if (!appData.depots[id]) {
+          appData.depots[id] = [];
+      }
+
+      // INTELLIGENTES HINZUFÜGEN:
+      // Wir suchen, ob die Aktie im aktuellen Depot schon existiert
+      const existingStock = appData.depots[id].find(s => s.name.toLowerCase() === name.toLowerCase());
+
+      if (existingStock) {
+        // Aktie schon da? Dann nur Anzahl erhöhen und Preis aktualisieren
+        existingStock.amount += amount;
+        existingStock.price = price; // Setzt den Preis auf den aktuell eingegebenen Wert
+      } else {
+        // Aktie neu? Dann wie gewohnt pushen
+        appData.depots[id].push({ name, amount, price });
+      }
+    }
+  });
+
+  // Alles speichern und Ansicht aktualisieren
+  saveAppData(); 
   updateAll(); 
 
-  // Felder leeren
+  // Eingabefelder leeren
   document.getElementById("newName").value = "";
   document.getElementById("newAmount").value = "";
   document.getElementById("newPrice").value = "";
   
   if (typeof toggleAdd === "function") toggleAdd();
+  
+  // Bonus: Vorschlagsliste für das nächste Mal aktualisieren
+  if (typeof updateStockSuggestions === "function") updateStockSuggestions();
 }
+  
+  
+function updateStockSuggestions() {
+  const list = document.getElementById("stockSuggestions");
+  if (!list) return;
+
+  const allNames = new Set();
+  
+  // Wir gehen sicher durch alle Depots
+  ["A", "B", "C", "D"].forEach(id => {
+    if (appData.depots && appData.depots[id]) {
+      appData.depots[id].forEach(s => {
+        if (s.name) allNames.add(s.name);
+      });
+    }
+  });
+
+  list.innerHTML = "";
+  // In der Konsole prüfen, ob überhaupt Namen gefunden wurden
+  console.log("Gefundene Aktien für Vorschläge:", Array.from(allNames));
+
+  Array.from(allNames).sort().forEach(name => {
+    const option = document.createElement("option");
+    option.value = name;
+    list.appendChild(option);
+  });
+}
+
+
 
 function clearAll(){
   if(confirm("Alle Daten wirklich löschen (inkl. Depot D)?")){
