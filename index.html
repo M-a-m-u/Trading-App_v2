@@ -2577,8 +2577,9 @@ function renderTable() {
       inputAmt.className = "amount-input"; 
       inputAmt.value = item.amount;
       // WICHTIG: Hier muss dep übergeben werden, damit das Popup weiß, aus welchem Depot gelöscht/geändert wird
-      inputAmt.onclick = e => { openAmountPopup(i, tableId, dep); e.target.blur(); };
       amtCell.appendChild(inputAmt);
+      // Wir übergeben jetzt den Namen (item.name) statt dem Index (i)
+      inputAmt.onclick = e => { openAmountPopup(item.name, tableId, dep); e.target.blur(); };
 
       let priceCell = row.insertCell();
       let inputPrice = document.createElement("input");
@@ -2632,28 +2633,39 @@ function showDeletePopup(item,depot){
   document.getElementById("popup").style.display="flex";
 }
 
-function openAmountPopup(index, tableId) {
+function openAmountPopup(stockName, tableId, dep) {
+  // 1. Wir bestimmen das Depot direkt über den übergebenen 'dep'-Parameter
+  // Falls 'dep' ein Array ist, finden wir den Key (A, B, C oder D)
+  let depotKey = "A";
+  if (dep === appData.depots.B) depotKey = "B";
+  if (dep === appData.depots.C) depotKey = "C";
+  if (dep === appData.depots.D) depotKey = "D";
 
-  // Hier erweitern wir die Abfrage um Depot D
-  const depotKey =
-    tableId === "depotA" ? "A" :
-    tableId === "depotB" ? "B" :
-    tableId === "depotC" ? "C" :
-    "D"; // Wenn es nicht A, B oder C ist, muss es D sein
+  // 2. Wir suchen die Aktie im echten Speicher anhand des Namens
+  const stockIndex = appData.depots[depotKey].findIndex(s => s.name === stockName);
 
-  document.getElementById("popupLabel").innerText =
-    "Anzahl ändern";
+  if (stockIndex === -1) {
+    console.error("Aktie im Speicher nicht gefunden:", stockName);
+    return;
+  }
 
+  // 3. Popup-Inhalt vorbereiten
+  document.getElementById("popupLabel").innerText = stockName + " - Anzahl ändern";
   document.getElementById("popupInput").style.display = "block";
-  document.getElementById("popupInput").value = "";
+  
+  // Aktuellen Wert aus dem Speicher in das Eingabefeld laden
+  document.getElementById("popupInput").value = appData.depots[depotKey][stockIndex].amount;
 
+  // 4. Speichern-Logik beim Klick auf OK
   document.getElementById("popupConfirm").onclick = function () {
     const val = parseFloat(document.getElementById("popupInput").value);
 
     if (!isNaN(val)) {
-      // Dank des neuen depotKey landet der Wert jetzt im richtigen Array
-      appData.depots[depotKey][index].amount = val;
-      updateAll(); 
+      // Den neuen Wert exakt an der gefundenen Stelle im Speicher ablegen
+      appData.depots[depotKey][stockIndex].amount = val;
+      
+      saveAppData(); // Dauerhaft im LocalStorage speichern
+      updateAll();   // Tabelle und Summen neu berechnen
     }
 
     closePopup();
@@ -2727,38 +2739,42 @@ function toggleUpdate() {
 container.innerHTML = "";
 container.style.display = "flex";
 
-// Alle Namen sammeln (A, B, C und jetzt auch D)
-let allNames = [];
-// 1. ÄNDERUNG: depotD in die Liste der zu scannenden Depots aufnehmen
-[depotA, depotB, depotC, depotD].forEach(dep => {
-  if (dep) { // Sicherheitscheck, falls depotD mal undefined sein sollte
-    dep.forEach(item => {
-      if (!allNames.includes(item.name)) allNames.push(item.name);
-    });
-  }
+// 1. Alle Namen sammeln (Dubletten vermeiden)
+let allNamesSet = new Set();
+[appData.depots.A, appData.depots.B, appData.depots.C, appData.depots.D].forEach(dep => {
+  if (dep) dep.forEach(item => allNamesSet.add(item.name.trim()));
 });
+let allNames = Array.from(allNamesSet);
 
-// Depot C nach Wert sortieren (Das bleibt dein Referenz-Depot für die Sortierung)
-const sortedDepotC = [...depotC].sort((a,b)=>(b.amount*b.price)-(a.amount*a.price));
+// 2. Depot C als Referenz für die Sortierung nehmen (nach Wert: Anzahl * Kurs)
+// Wir erstellen eine Kopie von Depot C und sortieren sie absteigend
+const referenceDepot = [...appData.depots.C].sort((a, b) => (b.amount * b.price) - (a.amount * a.price));
+
+// 3. Eine Map erstellen, die uns sagt: Welcher Name steht an welcher Stelle?
 const orderMap = {};
-sortedDepotC.forEach((item,index)=>{
-  orderMap[item.name] = index;
+referenceDepot.forEach((item, index) => {
+  orderMap[item.name.trim()] = index;
 });
 
-// Reihenfolge von Depot C übernehmen
-allNames.sort((a,b)=>{
+// 4. Die Liste der Namen sortieren
+allNames.sort((a, b) => {
   const indexA = orderMap[a];
   const indexB = orderMap[b];
 
-  if(indexA === undefined && indexB === undefined){
-    return a.localeCompare(b);
+  // Wenn beide in Depot C sind -> sortiere nach deren dortiger Position
+  if (indexA !== undefined && indexB !== undefined) {
+    return indexA - indexB;
   }
 
-  if(indexA === undefined) return 1;
-  if(indexB === undefined) return -1;
+  // Wenn nur einer in Depot C ist -> der aus C kommt weiter nach oben
+  if (indexA !== undefined) return -1;
+  if (indexB !== undefined) return 1;
 
-  return indexA - indexB;
+  // Wenn keiner in Depot C ist (z.B. nur in D) -> alphabetisch
+  return a.localeCompare(b);
 });
+
+// Ab hier geht dein Code weiter mit allNames.forEach(name => { ...
 
 
   allNames.forEach(name => {
