@@ -1613,17 +1613,22 @@ clip-path: polygon(
   ">
     Broker wechseln:
   </p>
-  
-  <div style="display: flex; justify-content: center; gap: 15px; padding: 0 10px;">
+
+  <div style="display: flex; justify-content: center; gap: 15px; padding: 0 10px; align-items: center;">
     <button id="btnShowRepublic" class="button-nav" onclick="switchHistory('C')">
-      Trade
-      Republic
+      Trade<br>Republic
     </button>
+    
+    <button id="btnShowTotal" class="button-nav" onclick="switchHistory('G')" style="min-width: 45px; flex: 0 1; font-weight: bold;">
+      G
+    </button>
+
     <button id="btnShowScalable" class="button-nav" onclick="switchHistory('D')">
-      Scalable
-      Capital
+      Scalable<br>Capital
     </button>
-  </div>
+</div>
+
+
 </div>
 
 
@@ -2310,8 +2315,16 @@ function renderHistory() {
 
   container.innerHTML = "";
 
-  // WEICHE: Welche Daten nehmen wir?
-  const historySource = (currentHistoryView === 'D') ? appData.historyD : appData.history;
+// WEICHE: Welche Daten nehmen wir? (C, D oder Gesamt G)
+let historySource;
+if (currentHistoryView === 'G') {
+    historySource = getCombinedHistoryData();
+} else if (currentHistoryView === 'D') {
+    historySource = appData.historyD;
+} else {
+    historySource = appData.history;
+}
+
 
   // Sortieren und Anzeigen
   historySource
@@ -2504,6 +2517,33 @@ function updatePerformanceDisplay() {
   });
 
 }
+
+function getCombinedHistoryData() {
+  // WICHTIG: Deine Namen im appData-Objekt sind 'history' und 'historyD'
+  const historyC = appData.history || [];
+  const historyD = appData.historyD || [];
+  
+  // Alle Daten (Tage) sammeln, an denen in IRGENDEINEM Depot etwas gespeichert wurde
+  const allDates = Array.from(new Set([
+    ...historyC.map(e => e.date),
+    ...historyD.map(e => e.date)
+  ])).sort();
+
+  return allDates.map(date => {
+    // Finde die Einträge für diesen Tag (oder nimm 0, wenn nichts da ist)
+    const eC = historyC.find(e => e.date === date) || { depot: 0, cash: 0, total: 0 };
+    const eD = historyD.find(e => e.date === date) || { depot: 0, cash: 0, total: 0 };
+    
+    return {
+      date: date,
+      depot: (eC.depot || 0) + (eD.depot || 0),
+      cash: (eC.cash || 0) + (eD.cash || 0),
+      total: (eC.total || 0) + (eD.total || 0),
+      isCombined: true // Das ist unser Schutz-Marker gegen das Löschen
+    };
+  });
+}
+
 
 function formatEuro(num) {
   return Number(num).toLocaleString("de-DE", {
