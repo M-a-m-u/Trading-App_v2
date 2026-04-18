@@ -2393,10 +2393,21 @@ function switchHistory(view) {
 
 
 function calculatePerformance(period) {
-  // WEICHE: Welche Datenquelle nutzen wir?
-  const source = (currentHistoryView === 'D') ? appData.historyD : appData.history;
+  // NEUE WEICHE: Welche Datenquelle nutzen wir?
+  let source;
+  
+  if (currentHistoryView === 'G') {
+    // Wenn wir in der Gesamtansicht sind, nutzen wir die kombinierte Funktion
+    source = getCombinedHistoryData();
+  } else if (currentHistoryView === 'D') {
+    // Wenn wir bei Scalable sind
+    source = appData.historyD;
+  } else {
+    // Standard: Trade Republic (C)
+    source = appData.history;
+  }
 
-  // Check, ob genug Daten vorhanden sind
+  // Ab hier bleibt der Rest der Funktion gleich...
   if (!source || source.length < 2) {
     return null;
   }
