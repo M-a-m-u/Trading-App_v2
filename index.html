@@ -2858,16 +2858,18 @@ allNames.sort((a, b) => {
     let rows = container.querySelectorAll(".update-row");
 	
     rows.forEach(row => {
-      const name = row.querySelector("label").dataset.symbol;
+      // Wir holen den Namen und machen ihn "sauber" (trimmen)
+      const name = row.querySelector("label").dataset.symbol.trim().toLowerCase();
       const val = parseFloat(row.querySelector("input").value);
 
       if (isNaN(val)) return;
 
-      // Geht durch alle Depots (inkl. D) und aktualisiert die Preise
-      [depotA, depotB, depotC, depotD].forEach(dep => {
+      // Wir gehen durch alle Depots
+      [appData.depots.A, appData.depots.B, appData.depots.C, appData.depots.D].forEach(dep => {
         if (dep) {
           dep.forEach(item => {
-            if (item.name === name) {
+            // WICHTIG: Wir vergleichen hier auch "sauber" (kleingeschrieben und ohne Leerzeichen)
+            if (item.name.trim().toLowerCase() === name) {
               item.price = val;
             }
           });
@@ -2875,18 +2877,13 @@ allNames.sort((a, b) => {
       });
     });
 
-    // 1. Alles in einem Rutsch erledigen: Speichern, Tabelle neu zeichnen, Summen rechnen
     updateAll(); 
-
-    // 2. Das Fenster schließen
     closePopup(); 
 
-    // 3. Den Screenshot-Modus / Button-Status zurücksetzen
     if (typeof toggleUpdate === "function") {
       toggleUpdate();
     }
   };
-
 
   container.appendChild(btn);
 
